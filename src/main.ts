@@ -1,5 +1,8 @@
+// FILENAME: main.ts
+// DESCRIPTION: The Vue App entry point.
+// AUTHOR: Annija Karitone
+
 import { createApp } from 'vue'
 import App from './App.vue'
 
-const app = createApp(App)
-app.mount('#app')
+createApp(App).mount('#app')
