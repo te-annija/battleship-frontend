@@ -4,10 +4,14 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="game__container-wrapper" v-if="player">
+  <div class="game" v-if="player">
     <h2>Hello {{ player.id }}</h2>
     <div class="game__container">
       <game-board :gameboard="player.gameboard" />
+      <div class="game__actions">
+        <button @click="sendSimpleAction('randomize-ships')">Randomize</button>
+        <button @click="sendSimpleAction('reset-ships')">Reset</button>
+      </div>
     </div>
   </div>
 </template>
@@ -48,7 +52,32 @@ export default defineComponent({
       if (this.socketService) {
         this.socketService.sendMessage(message)
       }
+    },
+    sendSimpleAction(type: string): void {
+      const message: WebsocketMessage = {
+        type: type,
+        data: null
+      }
+      this.sendMessage(JSON.stringify(message))
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.game {
+  &__container {
+    display: flex;
+    gap: 30px;
+  }
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    button {
+      cursor: pointer;
+    }
+  }
+}
+</style>

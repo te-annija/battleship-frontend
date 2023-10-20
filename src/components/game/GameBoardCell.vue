@@ -4,7 +4,7 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="gameboard__cell"></div>
+  <div class="gameboard__cell" :class="{ 'gameboard__cell-ship': cell.state === 'ship' }"></div>
 </template>
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
@@ -31,6 +31,10 @@ export default defineComponent({
 
   & + .gameboard__cell {
     border-left: none;
+  }
+
+  &-ship {
+    background: #b4b4ff;
   }
 }
 </style>
