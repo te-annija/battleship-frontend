@@ -13,6 +13,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import GameContainer from '@/components/game/GameContainer.vue'
+import './assets/app.scss'
 
 export default defineComponent({
   components: {

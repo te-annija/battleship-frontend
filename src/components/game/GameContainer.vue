@@ -4,14 +4,18 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="game-container">
-    <h2 v-if="player">Hello {{ player.id }}</h2>
+  <div class="game__container-wrapper" v-if="player">
+    <h2>Hello {{ player.id }}</h2>
+    <div class="game__container">
+      <game-board :gameboard="player.gameboard" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import WebSocketService from '@/services/WebSocketService'
+import GameBoard from './GameBoard.vue'
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
 import { type Player } from '@/types/GameTypes'
 
@@ -21,6 +25,9 @@ export default defineComponent({
       socketService: null as WebSocketService | null,
       player: null as Player | null
     }
+  },
+  components: {
+    GameBoard
   },
   mounted() {
     this.socketService = new WebSocketService()
