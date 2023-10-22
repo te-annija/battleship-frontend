@@ -54,11 +54,10 @@ export default defineComponent({
       }
     },
     sendSimpleAction(type: string): void {
-      const message: WebsocketMessage = {
-        type: type,
-        data: null
+      if (this.socketService) {
+        const message: string = this.socketService.formatMessage(type)
+        this.sendMessage(message)
       }
-      this.sendMessage(JSON.stringify(message))
     }
   }
 })
