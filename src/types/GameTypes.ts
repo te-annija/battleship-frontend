@@ -39,6 +39,9 @@ export type BoardCell = {
   /** The state of the cell (e.g., empty, hit, missed). */
   state: string
 
+  /* The state of the cell  (e.g., invalid, valid) to show if current selected ship coordinates are valid. **/
+  shipPlacementState?: string
+
   /** Reference to an occupying ship, or null if the cell is empty*/
   ship?: Ship
 }
@@ -59,6 +62,9 @@ export type Ship = {
 
   /** The position of the ship on the gameboard. */
   position: ShipPosition
+
+  /** Indicates if the ship is already placed on board. */
+  isOnBoard: boolean
 }
 
 /** Represents ship position on the grid. */

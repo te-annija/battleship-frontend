@@ -16,7 +16,13 @@
         v-for="(cell, colIndex) in row"
         :key="rowIndex + '' + colIndex"
         :cell="cell"
+        :row="rowIndex"
+        :column="colIndex"
         :class="{ 'brdr-top-none': rowIndex > 0 }"
+        @dragover.prevent
+        @dragover="!cell.ship && $emit('dragOver', rowIndex, colIndex)"
+        @dragleave="!cell.ship && $emit('dragLeave', rowIndex, colIndex)"
+        @drop="$emit('dropShip', rowIndex, colIndex)"
       />
     </div>
   </div>
