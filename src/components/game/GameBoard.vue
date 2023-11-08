@@ -19,6 +19,8 @@
         :row="rowIndex"
         :column="colIndex"
         :class="{ 'brdr-top-none': rowIndex > 0 }"
+        :is-game-mode="isGameMode"
+        @click="$emit('attackCell', rowIndex, colIndex)"
         @dragover.prevent
         @dragover="!cell.ship && $emit('dragOver', rowIndex, colIndex)"
         @dragleave="!cell.ship && $emit('dragLeave', rowIndex, colIndex)"
@@ -40,6 +42,10 @@ export default defineComponent({
   props: {
     gameboard: {
       type: Object as PropType<Gameboard>,
+      required: true
+    },
+    isGameMode: {
+      type: Boolean as PropType<Boolean>,
       required: true
     }
   }

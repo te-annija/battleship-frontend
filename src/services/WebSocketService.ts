@@ -82,7 +82,7 @@ export default class WebSocketService {
     const data: WebsocketMessage = JSON.parse(event.data)
     console.log('Received from server:', data)
 
-    if (data.data.player && !this.cookieService.getUserId()) {
+    if (data.data && data.data.player && !this.cookieService.getUserId()) {
       this.cookieService.setUserId(data.data.player.id)
     }
 

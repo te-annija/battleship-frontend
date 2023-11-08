@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="ship__container">
-    <game-ship v-for="ship in activeShips" :key="ship.id" :ship="ship" />
+    <game-ship v-for="ship in activeShips" :key="ship.id" :ship="ship" :is-game-mode="isGameMode" />
   </div>
 </template>
 <script lang="ts">
@@ -20,6 +20,10 @@ export default defineComponent({
   props: {
     ships: {
       type: Array as PropType<ShipInterface[]>,
+      required: true
+    },
+    isGameMode: {
+      type: Boolean as PropType<Boolean>,
       required: true
     }
   },

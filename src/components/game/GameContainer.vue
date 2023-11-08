@@ -9,16 +9,32 @@
     <div class="game__container">
       <game-board
         :gameboard="player.gameboard"
+        :is-game-mode="isGameMode"
         @dropShip="handleDropShip"
         @dragOver="handleDragOverCell"
         @dragLeave="handleDragLeaveCell"
       />
-      <ship-container :ships="player.gameboard.ships" @dragover.prevent @drop="handleRemoveShip" />
-      <div class="game__actions">
+      <ship-container
+        v-if="!isGameMode"
+        :ships="player.gameboard.ships"
+        :is-game-mode="isGameMode"
+        @dragover.prevent
+        @drop="handleRemoveShip"
+      />
+      <div class="game__actions" v-if="!isGameMode">
         <button @click="sendSimpleAction('randomize-ships')">Randomize</button>
         <button @click="sendSimpleAction('reset-ships')">Reset</button>
+        <button @click="sendSimpleAction('start-game')">Start Game</button>
       </div>
+      <game-board
+        v-if="isGameMode"
+        :gameboard="player.enemyGameboard"
+        :is-game-mode="isGameMode"
+        @attackCell="handleAttackCell"
+      />
     </div>
+    <button v-if="!isGameEnded && isGameMode" @click="sendSimpleAction('end-game')">End Game</button>
+    <button v-if="isGameEnded && isGameMode" @click="handleNewGame()">Create A New Game</button>
   </div>
 </template>
 
@@ -36,7 +52,9 @@ export default defineComponent({
     return {
       socketService: null as WebSocketService | null,
       player: null as Player | null,
-      selectedShip: null as Ship | null
+      selectedShip: null as Ship | null,
+      isGameMode: false as boolean,
+      isGameEnded: false as boolean
     }
   },
   components: {
@@ -67,6 +85,10 @@ export default defineComponent({
     handleMessage(data: WebsocketMessage): void {
       if (data.type == 'player' && data.data.player) {
         this.player = data.data.player
+      } else if (data.type == 'game-started') {
+        this.isGameMode = true
+      } else if (data.type == 'game-ended') {
+        this.isGameEnded = true
       }
     },
     sendMessage(message: string): void {
@@ -127,7 +149,7 @@ export default defineComponent({
     handleDragLeaveCell(rowIndex: number, colIndex: number) {
       this.dragShip(rowIndex, colIndex, false)
     },
-    handleRemoveShip() { 
+    handleRemoveShip() {
       if (this.socketService && this.selectedShip) {
         const message: string = this.socketService.formatMessage('remove-ship', {
           ship_id: this.selectedShip.id
@@ -140,6 +162,20 @@ export default defineComponent({
       if (!this.player) return false
       const boardSize = this.player.gameboard.size
       return rowIndex < boardSize && colIndex < boardSize && rowIndex >= 0 && colIndex >= 0
+    },
+    handleNewGame() {
+      this.isGameEnded = false
+      this.isGameMode = false
+    },
+    handleAttackCell(rowIndex: number, colIndex: number) {
+      if (this.socketService) {
+        const message: string = this.socketService.formatMessage('attack-cell', {
+          row: rowIndex,
+          col: colIndex
+        })
+        this.sendMessage(message)
+        this.selectedShip = null
+      }
     }
   }
 })

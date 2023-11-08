@@ -11,7 +11,7 @@
       'ship-vertical': ship.position.isVertical,
       'ship-selected': isSelected
     }"
-    draggable="true"
+    :draggable="!isGameMode"
     @dragstart="emitSelectShip"
     @dragend="emitUnselectShip"
   >
@@ -26,13 +26,17 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import { $bus } from '@/utils/GlobalEmit'
 
 export default defineComponent({
   props: {
     ship: {
       type: Object,
+      required: true
+    },
+    isGameMode: {
+      type: Boolean as PropType<Boolean>,
       required: true
     }
   },
@@ -63,7 +67,10 @@ export default defineComponent({
   border: 1px solid black;
   border: 1px solid black;
   position: relative;
-  cursor: move;
+
+  &[draggable='true'] {
+    cursor: move;
+  }
 
   &-vertical {
     flex-direction: column;
