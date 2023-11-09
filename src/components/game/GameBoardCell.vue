@@ -26,6 +26,7 @@
       :class="{ 'gameboard__cell-invalid': hoveredShip }"
       :ship="cell.ship"
       :is-game-mode="isGameMode"
+      :is-edit-mode="isEditMode"
       @dragover="hoveredShip = true"
       @dragleave="hoveredShip = false"
       @drop="hoveredShip = false"
@@ -61,6 +62,10 @@ export default defineComponent({
       default: null
     },
     isGameMode: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    },
+    isEditMode: {
       type: Boolean as PropType<Boolean>,
       required: true
     },

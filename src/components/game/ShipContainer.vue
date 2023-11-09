@@ -5,7 +5,13 @@
 -->
 <template>
   <div class="ship__container">
-    <game-ship v-for="ship in activeShips" :key="ship.id" :ship="ship" :is-game-mode="isGameMode" />
+    <game-ship
+      v-for="ship in activeShips"
+      :key="ship.id"
+      :ship="ship"
+      :is-game-mode="isGameMode"
+      :is-edit-mode="isEditMode"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -23,6 +29,10 @@ export default defineComponent({
       required: true
     },
     isGameMode: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    },
+    isEditMode: {
       type: Boolean as PropType<Boolean>,
       required: true
     }

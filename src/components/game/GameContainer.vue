@@ -10,6 +10,7 @@
       <game-board
         :gameboard="player.gameboard"
         :is-game-mode="isGameMode"
+        :is-edit-mode="isEditMode"
         :is-player-turn="isPlayerTurn"
         :is-player-game-board="true"
         @dropShip="handleDropShip"
@@ -17,27 +18,51 @@
         @dragLeave="handleDragLeaveCell"
       />
       <ship-container
-        v-if="!isGameMode"
+        v-if="!isGameMode && isEditMode"
         :ships="player.gameboard.ships"
         :is-game-mode="isGameMode"
+        :is-edit-mode="isEditMode"
         @dragover.prevent
         @drop="handleRemoveShip"
       />
-      <div class="game__actions" v-if="!isGameMode">
+      <div v-if="!isGameMode && isEditMode" class="game__actions-edit">
         <button @click="sendSimpleAction('randomize-ships')">Randomize</button>
         <button @click="sendSimpleAction('reset-ships')">Reset</button>
-        <button @click="sendSimpleAction('start-game')">Start Game</button>
+        <button @click="confirmShipPlacement()">Confirm Ship Placement</button>
+      </div>
+      <div v-if="!isGameMode && !isEditMode" class="game__actions-create">
+        <span>Choose opponent:</span>
+        <div>
+          <button
+            @click="chooseOpponent('computer')"
+            :class="{ selected: selectedOpponent === 'computer' }"
+          >
+            Computer
+          </button>
+          <button
+            @click="chooseOpponent('random')"
+            :class="{ selected: selectedOpponent === 'random' }"
+          >
+            Random
+          </button>
+        </div>
+        <div>
+          <button @click="startGame()">Play</button>
+        </div>
       </div>
       <game-board
         v-if="isGameMode"
         :gameboard="player.enemyGameboard"
         :is-game-mode="isGameMode"
-        :is-player-turn="isPlayerTurn"
+        :is-edit-mode="isEditMode"
+        :is-player-turn="isPlayerTurn && isOpponentConnected"
         :is-player-game-board="false"
         @attackCell="handleAttackCell"
       />
     </div>
-    <button v-if="isGameMode" @click="handleExitGame()">Exit Game</button>
+    <button v-if="isGameMode" @click="handleLeaveGame()">Leave Game</button>
+    <game-waiting-overlay v-if="isWaitingMode" />
+    <div v-if="isGameMode && !isOpponentConnected">Opponent disconnected!</div>
   </div>
 </template>
 
@@ -46,6 +71,7 @@ import { defineComponent } from 'vue'
 import WebSocketService from '@/services/WebSocketService'
 import GameBoard from './GameBoard.vue'
 import ShipContainer from './ShipContainer.vue'
+import GameWaitingOverlay from './GameWaitingOverlay.vue'
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
 import { type Player, type Ship } from '@/types/GameTypes'
 import { $bus } from '@/utils/GlobalEmit'
@@ -57,12 +83,17 @@ export default defineComponent({
       player: null as Player | null,
       selectedShip: null as Ship | null,
       isGameMode: false as boolean,
-      isPlayerTurn: true as boolean
+      isEditMode: true as boolean,
+      isPlayerTurn: true as boolean,
+      isWaitingMode: false as boolean,
+      selectedOpponent: 'computer' as string,
+      isOpponentConnected: false as boolean
     }
   },
   components: {
     GameBoard,
-    ShipContainer
+    ShipContainer,
+    GameWaitingOverlay
   },
   mounted() {
     this.socketService = new WebSocketService()
@@ -86,14 +117,26 @@ export default defineComponent({
       ship.position.isVertical = !ship.position.isVertical
     },
     handleMessage(data: WebsocketMessage): void {
-      if (data.type == 'player' && data.data.player) {
-        this.player = data.data.player
-      } else if (data.type == 'game-started') {
-        this.isGameMode = true
-      } else if (data.type == 'player-turn') {
-        this.isPlayerTurn = true
-      } else if (data.type == 'opponent-turn') {
-        this.isPlayerTurn = false
+      switch (data.type) {
+        case 'player':
+          if (data.data.player) {
+            this.player = data.data.player
+          }
+          break
+        case 'game-started':
+          this.isOpponentConnected = true
+          this.isGameMode = true
+          this.isEditMode = false
+          this.isWaitingMode = false
+          break
+        case 'player-turn':
+          this.isPlayerTurn = true
+          break
+        case 'opponent-turn':
+          this.isPlayerTurn = false
+          break
+        case 'opponent-disconnected':
+          this.isOpponentConnected = false
       }
     },
     sendMessage(message: string): void {
@@ -165,12 +208,14 @@ export default defineComponent({
     },
     isValidCoordinates(rowIndex: number, colIndex: number) {
       if (!this.player) return false
-      const boardSize = this.player.gameboard.size
+      const boardSize: number = this.player.gameboard.size
       return rowIndex < boardSize && colIndex < boardSize && rowIndex >= 0 && colIndex >= 0
     },
-    handleExitGame() {
-      this.sendSimpleAction('end-game')
+    handleLeaveGame() {
+      this.sendSimpleAction('leave-game')
       this.isGameMode = false
+      this.isEditMode = true
+      this.isOpponentConnected = false
     },
     handleAttackCell(rowIndex: number, colIndex: number) {
       if (this.socketService) {
@@ -181,6 +226,25 @@ export default defineComponent({
         this.sendMessage(message)
         this.selectedShip = null
       }
+    },
+    confirmShipPlacement() {
+      if (this.player && this.player.gameboard.ships.every((ship) => ship.isOnBoard)) {
+        this.isEditMode = false
+      }
+    },
+    chooseOpponent(opponent: string) {
+      this.selectedOpponent = opponent
+    },
+    startGame() {
+      switch (this.selectedOpponent) {
+        case 'random':
+          this.sendSimpleAction('join-room')
+          this.isWaitingMode = true
+          break
+        case 'computer':
+          this.sendSimpleAction('create-room-ai')
+          break
+      }
     }
   }
 })
@@ -188,17 +252,30 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .game {
+  position: relative;
+  padding: 30px;
+
   &__container {
     display: flex;
     gap: 30px;
   }
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 
+  &__actions {
     button {
       cursor: pointer;
+    }
+
+    &-edit {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    &-create {
+      .selected {
+        border: 2px solid green;
+        background-color: transparentize(green, 0.7);
+      }
     }
   }
 }

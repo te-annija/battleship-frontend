@@ -27,6 +27,7 @@
         :row="rowIndex"
         :column="colIndex"
         :is-game-mode="isGameMode"
+        :is-edit-mode="isEditMode"
         :is-player-turn="isPlayerTurn"
         :is-player-game-board="isPlayerGameBoard"
         @click="cell.state == 'empty' && $emit('attackCell', rowIndex, colIndex)"
@@ -54,6 +55,10 @@ export default defineComponent({
       required: true
     },
     isGameMode: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    },
+    isEditMode: {
       type: Boolean as PropType<Boolean>,
       required: true
     },

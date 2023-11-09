@@ -13,7 +13,7 @@
       'ship-selected': isSelected
     }"
     :id="ship.id"
-    :draggable="!isGameMode"
+    :draggable="!isGameMode && isEditMode"
     @dragstart="emitSelectShip"
     @dragend="emitUnselectShip"
   >
@@ -43,6 +43,10 @@ export default defineComponent({
       required: true
     },
     isGameMode: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    },
+    isEditMode: {
       type: Boolean as PropType<Boolean>,
       required: true
     }
