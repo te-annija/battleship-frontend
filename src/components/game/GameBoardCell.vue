@@ -13,21 +13,24 @@
       'gameboard__cell-hit': cell && cell.state === 'hit',
       'gameboard__cell-miss': cell && cell.state === 'miss',
       'gameboard__cell-valid': !isGameMode && cell && cell.shipPlacementState == 'valid',
-      'gameboard__cell-invalid': !isGameMode && cell && cell.shipPlacementState == 'invalid'
+      'gameboard__cell-invalid': !isGameMode && cell && cell.shipPlacementState == 'invalid',
+      'gameboard__cell-attack':
+        isGameMode && isPlayerTurn && !isPlayerGameBoard && cell && cell.state === 'empty'
     }"
   >
     <game-ship
-      class="gameboard__ship"
       v-if="
         cell && cell.ship && cell.ship.position.row === row && cell.ship.position.col === column
       "
+      class="gameboard__ship"
+      :class="{ 'gameboard__cell-invalid': hoveredShip }"
       :ship="cell.ship"
       :is-game-mode="isGameMode"
-      :class="{ 'gameboard__cell-invalid': hoveredShip }"
       @dragover="hoveredShip = true"
       @dragleave="hoveredShip = false"
       @drop="hoveredShip = false"
     />
+    <span class="circle"></span>
   </div>
 </template>
 <script lang="ts">
@@ -60,6 +63,14 @@ export default defineComponent({
     isGameMode: {
       type: Boolean as PropType<Boolean>,
       required: true
+    },
+    isPlayerTurn: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    },
+    isPlayerGameBoard: {
+      type: Boolean as PropType<Boolean>,
+      required: true
     }
   }
 })
@@ -75,39 +86,71 @@ export default defineComponent({
   height: 30px;
   border: 1px solid #d1bfbf;
 
-  & + .gameboard__cell {
+  & + & {
     border-left: none;
   }
 
   &-ship {
-    background: #b4b4ff;
+    background: transparentize(#b4b4ff, 0.6);
   }
 
   &-adjacent {
-    background: #f5f2f2;
+    background: transparentize(#f5f2f2, 0.2);
   }
+
   &-valid {
-    background: #68a357;
-    opacity: 0.7;
+    background: transparentize(#68a357, 0.6);
   }
+
   &-invalid {
-    background: #ba1200;
-    opacity: 0.7;
+    background: transparentize(#ba1200, 0.6);
   }
 
   &-hit {
-    background-color: #eca7a2;
+    background-color: transparentize(#eca7a2, 0.6);
+    &:before,
+    &:after {
+      content: '';
+      height: 40px;
+      width: 1px;
+      background-color: #ff0000;
+    }
+
+    &:before {
+      transform: rotate(45deg);
+    }
+
+    &:after {
+      transform: rotate(-45deg);
+    }
   }
 
   &-miss {
-    background-color: #dfdfdf;
-    background-image: radial-gradient(rgba(217, 217, 217, 0.5) 4px, transparent 0);
+    background-color: transparentize(#dfdfdf, 0.6);
+
+    .circle {
+      width: 4px;
+      height: 4px;
+      background-color: #adadad;
+      border-radius: 50%;
+    }
+  }
+
+  &-attack {
+    cursor: pointer;
+    z-index: 5;
+
+    &:hover {
+      border: 1px solid #68a357 !important;
+      box-shadow: 0 0 0 1.5px #68a357;
+      background: transparentize(#68a357, 0.9);
+    }
   }
 }
 .gameboard__ship {
   position: absolute;
   z-index: 5;
-  top: 0;
-  left: 0;
+  top: -1.4px;
+  left: -1.4px;
 }
 </style>

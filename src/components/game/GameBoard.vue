@@ -4,7 +4,14 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="gameboard" v-if="gameboard">
+  <div
+    v-if="gameboard"
+    class="gameboard"
+    :class="{
+      'gameboard-overlay':
+        isGameMode && ((isPlayerTurn && isPlayerGameBoard) || (!isPlayerTurn && !isPlayerGameBoard))
+    }"
+  >
     <div class="gameboard__header">
       <div v-for="(col, colIndex) in gameboard.size" :key="colIndex" class="gameboard__header-cell">
         {{ String.fromCharCode(65 + colIndex) }}
@@ -15,16 +22,18 @@
       <game-board-cell
         v-for="(cell, colIndex) in row"
         :key="rowIndex + '' + colIndex"
+        :class="{ 'brdr-top-none': rowIndex > 0 }"
         :cell="cell"
         :row="rowIndex"
         :column="colIndex"
-        :class="{ 'brdr-top-none': rowIndex > 0 }"
         :is-game-mode="isGameMode"
-        @click="$emit('attackCell', rowIndex, colIndex)"
+        :is-player-turn="isPlayerTurn"
+        :is-player-game-board="isPlayerGameBoard"
+        @click="cell.state == 'empty' && $emit('attackCell', rowIndex, colIndex)"
         @dragover.prevent
         @dragover="!cell.ship && $emit('dragOver', rowIndex, colIndex)"
         @dragleave="!cell.ship && $emit('dragLeave', rowIndex, colIndex)"
-        @drop="$emit('dropShip', rowIndex, colIndex)"
+        @drop="handleDrop(rowIndex, colIndex, cell.shipPlacementState == 'valid')"
       />
     </div>
   </div>
@@ -47,6 +56,23 @@ export default defineComponent({
     isGameMode: {
       type: Boolean as PropType<Boolean>,
       required: true
+    },
+    isPlayerTurn: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    },
+    isPlayerGameBoard: {
+      type: Boolean as PropType<Boolean>,
+      required: true
+    }
+  },
+  methods: {
+    handleDrop(rowIndex: number, colIndex: number, canDropShip: boolean) {
+      if (canDropShip) {
+        this.$emit('dropShip', rowIndex, colIndex)
+      } else {
+        this.$emit('dragLeave', rowIndex, colIndex)
+      }
     }
   }
 })
@@ -69,6 +95,10 @@ export default defineComponent({
       align-items: center;
       justify-content: center;
     }
+  }
+
+  &-overlay {
+    opacity: 0.4;
   }
 }
 </style>

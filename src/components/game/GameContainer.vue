@@ -4,12 +4,14 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="game" v-if="player">
+  <div v-if="player" class="game">
     <h2>Hello {{ player.id }}</h2>
     <div class="game__container">
       <game-board
         :gameboard="player.gameboard"
         :is-game-mode="isGameMode"
+        :is-player-turn="isPlayerTurn"
+        :is-player-game-board="true"
         @dropShip="handleDropShip"
         @dragOver="handleDragOverCell"
         @dragLeave="handleDragLeaveCell"
@@ -30,11 +32,12 @@
         v-if="isGameMode"
         :gameboard="player.enemyGameboard"
         :is-game-mode="isGameMode"
+        :is-player-turn="isPlayerTurn"
+        :is-player-game-board="false"
         @attackCell="handleAttackCell"
       />
     </div>
-    <button v-if="!isGameEnded && isGameMode" @click="sendSimpleAction('end-game')">End Game</button>
-    <button v-if="isGameEnded && isGameMode" @click="handleNewGame()">Create A New Game</button>
+    <button v-if="isGameMode" @click="handleExitGame()">Exit Game</button>
   </div>
 </template>
 
@@ -54,7 +57,7 @@ export default defineComponent({
       player: null as Player | null,
       selectedShip: null as Ship | null,
       isGameMode: false as boolean,
-      isGameEnded: false as boolean
+      isPlayerTurn: true as boolean
     }
   },
   components: {
@@ -87,8 +90,10 @@ export default defineComponent({
         this.player = data.data.player
       } else if (data.type == 'game-started') {
         this.isGameMode = true
-      } else if (data.type == 'game-ended') {
-        this.isGameEnded = true
+      } else if (data.type == 'player-turn') {
+        this.isPlayerTurn = true
+      } else if (data.type == 'opponent-turn') {
+        this.isPlayerTurn = false
       }
     },
     sendMessage(message: string): void {
@@ -163,8 +168,8 @@ export default defineComponent({
       const boardSize = this.player.gameboard.size
       return rowIndex < boardSize && colIndex < boardSize && rowIndex >= 0 && colIndex >= 0
     },
-    handleNewGame() {
-      this.isGameEnded = false
+    handleExitGame() {
+      this.sendSimpleAction('end-game')
       this.isGameMode = false
     },
     handleAttackCell(rowIndex: number, colIndex: number) {

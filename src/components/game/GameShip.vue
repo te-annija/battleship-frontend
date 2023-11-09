@@ -5,17 +5,24 @@
 -->
 <template>
   <div
-    :id="ship.id"
     class="ship"
     :class="{
       'ship-vertical': ship.position.isVertical,
+      'ship-placed': ship.isOnBoard,
+      'ship-sunk': ship.hits === ship.size,
       'ship-selected': isSelected
     }"
+    :id="ship.id"
     :draggable="!isGameMode"
     @dragstart="emitSelectShip"
     @dragend="emitUnselectShip"
   >
-    <div class="ship__cell" v-bind:key="index" v-for="index in ship.size" />
+    <div
+      class="ship__cell"
+      :class="{ 'ship__cell-grid': ship.isOnBoard && !isSelected }"
+      v-bind:key="index"
+      v-for="index in ship.size"
+    />
     <div class="ship-rotate" v-if="!ship.isOnBoard" @click="emitToggleRotation">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <path
@@ -65,7 +72,6 @@ export default defineComponent({
   display: flex;
   width: fit-content;
   border: 1px solid black;
-  border: 1px solid black;
   position: relative;
 
   &[draggable='true'] {
@@ -77,15 +83,30 @@ export default defineComponent({
   }
 
   &-selected {
-    background: #b4b4ff;
+    background: transparentize(#b4b4ff, 0.4);
+  }
+
+  &-placed {
+    border: 1px solid #9e9edd;
+    box-shadow: 0 0 0 1px #9e9edd;
+  }
+
+  &-sunk {
+    border: 1.5px solid #ff0000;
+    box-shadow: 0 0 0 1px #ff0000;
   }
 
   &__cell {
     width: 30px;
     height: 30px;
     border: 1px solid #d1bfbf;
-    & + .ship__cell {
+
+    & + & {
       border-left: none;
+    }
+
+    &-grid {
+      border: none;
     }
   }
 
