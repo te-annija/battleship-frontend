@@ -6,18 +6,20 @@
 <template>
   <main>
     <h1>Battleship Game</h1>
-    <GameContainer />
+    <main>
+      <RouterView />
+    </main>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import GameContainer from '@/components/game/GameContainer.vue'
+import { RouterView } from 'vue-router'
 import './assets/app.scss'
 
 export default defineComponent({
   components: {
-    GameContainer
+    RouterView
   }
 })
 </script>

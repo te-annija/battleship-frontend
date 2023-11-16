@@ -9,7 +9,9 @@
     class="gameboard"
     :class="{
       'gameboard-overlay':
-        isGameMode && ((isPlayerTurn && isPlayerGameBoard) || (!isPlayerTurn && !isPlayerGameBoard))
+        (!isGameMode && !isEditMode) ||
+        (isGameMode &&
+          ((isPlayerTurn && isPlayerGameBoard) || (!isPlayerTurn && !isPlayerGameBoard)))
     }"
   >
     <div class="gameboard__header">

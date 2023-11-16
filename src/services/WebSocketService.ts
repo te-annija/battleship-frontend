@@ -5,6 +5,7 @@
 
 import { type MessageHandler, type WebsocketMessage } from '@/types/WebSocketTypes'
 import CookieService from './CookieService'
+import { $bus } from '@/utils/GlobalEmit'
 
 /**
  * Service to handle interaction with WebSocket for multiplayer connection.
@@ -72,6 +73,7 @@ export default class WebSocketService {
    */
   private handleOpen(event: Event) {
     console.log('Connected to server')
+    $bus.emit('websocket-connected', event)
   }
 
   /**
@@ -96,6 +98,7 @@ export default class WebSocketService {
    */
   private handleClose(event: CloseEvent) {
     console.log('Disconnected from server')
+    $bus.emit('websocket-disconnected', event)
   }
 
   /**

@@ -9,11 +9,17 @@ export type Player = {
   /** The unique identifier for the player. */
   id: string
 
+  /** The public name of the player. */
+  name: string
+
   /** The player's own gameboard. */
-  gameboard: Gameboard
+  gameboard?: Gameboard
 
   /** The results of the player's attacks on the enemy's gameboard. */
-  enemyGameboard: Gameboard
+  enemyGameboard?: Gameboard
+
+  /** True if player is ready to start the game. */
+  isReady: boolean
 }
 
 /** Represents a gameboard for a player's game. */
