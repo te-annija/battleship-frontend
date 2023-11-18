@@ -4,22 +4,29 @@
   AUTHOR: Annija Karitone
 -->
 <template>
-  <main>
-    <h1>Battleship Game</h1>
+  <div>
+    <navbar-header />
     <main>
       <RouterView />
     </main>
-  </main>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
-import './assets/app.scss'
+import NavbarHeader from '@/components/layout/NavbarHeader.vue'
+import './assets/styles/app.scss'
 
 export default defineComponent({
   components: {
-    RouterView
+    RouterView,
+    NavbarHeader
   }
 })
 </script>
+<style lang="scss" scoped>
+main {
+  width: 100%;
+}
+</style>

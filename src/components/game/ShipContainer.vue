@@ -5,13 +5,31 @@
 -->
 <template>
   <div class="ship__container">
-    <game-ship
-      v-for="ship in activeShips"
-      :key="ship.id"
-      :ship="ship"
-      :is-game-mode="isGameMode"
-      :is-edit-mode="isEditMode"
-    />
+    <div v-for="type in shipTypes" :key="type">
+      <p>{{ type }}</p>
+      <div class="ship__container-type">
+        <div
+          class="ship__container-ship"
+          :class="{ 'ship__container-ship-vertical': ship.position.isVertical && !ship.isOnBoard }"
+          v-for="ship in getShipsByType(type)"
+          :key="ship.id"
+        >
+          <div
+            class="ship__container-cell"
+            :class="{ 'ship__container-cell-placed': ship.isOnBoard }"
+            v-for="index in ship.size"
+            v-bind:key="index"
+          >
+            <game-ship
+              v-if="index == 1 && !ship.isOnBoard"
+              :ship="ship"
+              :is-game-mode="isGameMode"
+              :is-edit-mode="isEditMode"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -38,16 +56,52 @@ export default defineComponent({
     }
   },
   computed: {
-    activeShips() {
-      return this.ships.filter((ship) => !ship.isOnBoard)
+    shipTypes() {
+      return Array.from(new Set(this.ships.map((ship) => ship.name)))
+    }
+  },
+  methods: {
+    getShipsByType(type: string) {
+      return this.ships.filter((ship) => ship.name === type)
     }
   }
 })
 </script>
 <style lang="scss" scoped>
+@import '../../assets/styles/_variables';
+
 .ship__container {
-  width: 200px;
+  width: 225px;
   padding: 10px;
-  border: 1px solid #ccc;
+
+  &-ship {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &-vertical {
+      flex-direction: column;
+    }
+  }
+
+  &-type {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+  }
+
+  &-cell {
+    width: 30px;
+    height: 30px;
+
+    &-placed {
+      border: dotted 1px $cl-text;
+    }
+
+    & + & {
+      border-left: none;
+    }
+  }
 }
 </style>

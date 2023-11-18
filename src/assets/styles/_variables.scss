@@ -1,0 +1,55 @@
+// Color definitions.
+$cl-purple: #be0afa;
+$cl-blue: #628395;
+$cl-deep-black: #080417;
+$cl-rose: #fef9ff;
+$cl-light-blue: #ced8de;
+$cl-brown: #d1bfbf;
+$cl-red: #f85149;
+
+// Variable definitions for light theme.
+html[data-theme='light'] {
+  --cl-text: #080417;
+  --cl-bg: #fff;
+  --cl-bg-navbar: #62839550;
+  --cl-bg-navbar-account: #fff;
+  --cl-bg-game: #62839520;
+  --cl-brdr-game: #d1bfbf;
+  --cl-bg-error: #f85149;
+  --cl-btn-text-hover: #be0afa;
+  --cl-btn-bg-hover: none;
+
+  --bg-rotate: url(../icons/rotate.svg);
+}
+
+// Variable definitions for dark theme.
+html[data-theme='dark'] {
+  --cl-text: #fff;
+  --cl-bg: #080417;
+  --cl-bg-navbar: #080417;
+  --cl-bg-navbar-account: #080417;
+  --cl-bg-game: #62839570;
+  --cl-brdr-game: #080417;
+  --cl-bg-error: #080417;
+
+  --cl-btn-text-hover: #fff;
+  --cl-btn-bg-hover: #be0afa;
+
+  --bg-rotate: url(../icons/rotate-white.svg);
+}
+
+// Variable  definitions for styling.
+$cl-primary: $cl-purple;
+$cl-secondary: $cl-blue;
+
+$cl-text: var(--cl-text);
+$cl-bg: var(--cl-bg);
+$cl-bg-navbar: var(--cl-bg-navbar);
+$cl-bg-navbar-account: var(--cl-bg-navbar-account);
+$cl-bg-game: var(--cl-bg-game);
+$cl-brdr-game: var(--cl-brdr-game);
+
+$cl-btn-text-hover: var(--cl-btn-text-hover);
+$cl-btn-bg-hover: var(--cl-btn-bg-hover);
+
+$bg-rotate: var(--bg-rotate);

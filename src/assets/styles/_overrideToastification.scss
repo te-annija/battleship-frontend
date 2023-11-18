@@ -1,0 +1,40 @@
+@import './_variables.scss';
+
+// Override the Toastification variables
+$vt-toast-min-width: 150px;
+$vt-toast-max-width: 1200px;
+$vt-toast-min-height: 40px;
+$vt-toast-max-height: 50px;
+$vt-font-family: 'Patrick Hand', cursive;
+$vt-color-error: var(--cl-bg-error);
+
+// Import the regular Vue Toastification stylesheets
+@import 'vue-toastification/src/scss/_variables';
+@import 'vue-toastification/src/scss/_toastContainer';
+@import 'vue-toastification/src/scss/_toast';
+@import 'vue-toastification/src/scss/_closeButton';
+@import 'vue-toastification/src/scss/_progressBar';
+@import 'vue-toastification/src/scss/_icon';
+@import 'vue-toastification/src/scss/animations/_bounce';
+
+// Override Toastification styles
+.#{$vt-namespace}__toast {
+  padding: 5px 20px;
+  border-radius: 5px;
+  width: 100vw;
+
+  &--error {
+    border: solid 2px $cl-red;
+  }
+
+  &.top-center {
+    top: 60px;
+  }
+}
+
+.#{$vt-namespace}__close-button {
+  &:hover {
+    border: none !important;
+    color: #fff !important;
+  }
+}

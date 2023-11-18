@@ -5,21 +5,10 @@
 -->
 <template>
   <div v-if="player" class="game">
-    <h2>Hello {{ player.name }}</h2>
-    <div class="game__container">
-      <game-board
-        v-if="player.gameboard"
-        :gameboard="player.gameboard"
-        :is-game-mode="isGameMode"
-        :is-edit-mode="isEditMode"
-        :is-player-turn="isPlayerTurn"
-        :is-player-game-board="true"
-        @dropShip="handleDropShip"
-        @dragOver="handleDragOverCell"
-        @dragLeave="handleDragLeaveCell"
-      />
+    <div class="game__container box-shadow">
       <ship-container
-        v-if="isEditMode && player.gameboard"
+        class="game__shipcontainer"
+        v-if="player.gameboard && isEditMode"
         :ships="player.gameboard.ships"
         :is-game-mode="isGameMode"
         :is-edit-mode="isEditMode"
@@ -27,72 +16,112 @@
         @drop="handleRemoveShip"
       />
 
-      <div v-if="!isGameMode && !isWaitingMode" class="game__actions-create">
-        <button :disabled="!isShipsPlaced" @click="startGame('random')">Play Online</button>
-        <button :disabled="!isShipsPlaced" @click="startGame('friend')">Play With Friend</button>
-        <button :disabled="!isShipsPlaced" @click="startGame('computer')">
-          Play With Computer
-        </button>
-      </div>
-
-      <div v-if="isWaitingMode" class="game__waitingroom">
-        <div v-if="!isOpponentConnected">
-          <div class="spinner" />
-          <p>Waiting for opponent to join...</p>
-        </div>
-
-        <div v-if="friendGameroomID && !isOpponentConnected">
-          <div>Share this link with your friend:</div>
-          <div>{{ generateFriendLink }}</div>
-        </div>
-        <div v-if="isOpponentConnected && opponent">
-          <div>
-            <p>Players connected:</p>
-            <p>
-              You
-              <status-widget
-                :is-status-green="player.isReady"
-                :is-status-red="!player.isReady"
-                status-green-text="Player Ready"
-                status-red-text="Player Not Ready"
-              />
-            </p>
-            <p>
-              {{ opponent.name }}
-              <status-widget
-                :is-status-green="opponent.isReady"
-                :is-status-red="!opponent.isReady"
-                status-green-text="Player Ready"
-                status-red-text="Player Not Ready"
-              />
-            </p>
+      <div class="game__container-wrap">
+        <div class="game__gameboard">
+          <game-board
+            v-if="player.gameboard"
+            :gameboard="player.gameboard"
+            :is-game-mode="isGameMode"
+            :is-edit-mode="isEditMode"
+            :is-player-turn="isPlayerTurn"
+            :is-player-game-board="true"
+            @dropShip="handleDropShip"
+            @dragOver="handleDragOverCell"
+            @dragLeave="handleDragLeaveCell"
+          />
+          <div class="game__actions-edit">
+            <button v-if="isEditMode" @click="sendSimpleAction('randomize-ships')">
+              Randomize
+            </button>
+            <button v-if="isEditMode" @click="sendSimpleAction('reset-ships')">Reset</button>
+            <button
+              class="game__actions-leave"
+              v-if="isGameMode || isWaitingMode"
+              @click="handleLeaveGame()"
+            >
+              Leave Game
+            </button>
           </div>
-          <button :disabled="!isShipsPlaced" @click="toggleReady()">
-            {{ player.isReady ? 'Not Ready' : 'Ready' }}
+        </div>
+        <div v-if="isGameMode" class="game__gameboard">
+          <game-board
+            v-if="isGameMode && player.enemyGameboard"
+            :gameboard="player.enemyGameboard"
+            :is-game-mode="isGameMode"
+            :is-edit-mode="false"
+            :is-waiting-mode="isWaitingMode"
+            :is-player-turn="isPlayerTurn && isOpponentConnected"
+            :is-player-game-board="false"
+            @attackCell="handleAttackCell"
+          />
+        </div>
+        <div v-if="!isGameMode && !isWaitingMode" class="game__actions-create">
+          <button :disabled="!isShipsPlaced" @click="startGame('random')">Play Online</button>
+          <button :disabled="!isShipsPlaced" @click="startGame('friend')">Play With Friend</button>
+          <button :disabled="!isShipsPlaced" @click="startGame('computer')">
+            Play With Computer
           </button>
         </div>
+
+        <div v-if="!isGameMode && isWaitingMode" class="game__waitingroom">
+          <div v-if="player.gameRoomId || friendGameroomID">
+            Gameroom ID: {{ player.gameRoomId || friendGameroomID }}
+          </div>
+          <div>
+            Players:
+            <div>
+              <p>
+                You ({{ player.name }})
+                <status-widget
+                  v-if="isOpponentConnected"
+                  :is-status-green="player.isReady"
+                  :is-status-red="!player.isReady"
+                  status-green-text="Player Ready"
+                  status-red-text="Player Not Ready"
+                />
+              </p>
+            </div>
+            <div>
+              <div v-if="!isOpponentConnected">
+                <p>Opponent: <span class="spinner" /> Waiting</p>
+              </div>
+              <div v-if="isOpponentConnected && opponent">
+                <p>
+                  Opponent: {{ opponent.name }}
+                  <status-widget
+                    :is-status-green="opponent.isReady"
+                    :is-status-red="!opponent.isReady"
+                    status-green-text="Player Ready"
+                    status-red-text="Player Not Ready"
+                  />
+                </p>
+              </div>
+              <div v-if="friendGameroomID && !isOpponentConnected">
+                <div>Share this link with your friend:</div>
+                <div class="game__waitingroom-link">
+                  <input v-model="generateFriendLink" readonly />
+                  <img
+                    v-if="!isLinkCopied"
+                    class="copy-icon"
+                    alt="Copy"
+                    src="@/assets/icons/copy.svg"
+                    height="20"
+                    v-clipboard:copy="generateFriendLink"
+                    v-clipboard:success="onSuccessCopy"
+                  />
+                  <img v-else alt="Copied" src="@/assets/icons/copied.svg" height="20" />
+                </div>
+              </div>
+              <div v-if="friendGameroomID && isOpponentConnected">
+                <button :disabled="!isShipsPlaced" @click="toggleReady()">
+                  {{ player.isReady ? 'Not Ready' : 'Ready' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <game-board
-        v-if="isGameMode && player.enemyGameboard"
-        :gameboard="player.enemyGameboard"
-        :is-game-mode="isGameMode"
-        :is-edit-mode="false"
-        :is-waiting-mode="isWaitingMode"
-        :is-player-turn="isPlayerTurn && isOpponentConnected"
-        :is-player-game-board="false"
-        @attackCell="handleAttackCell"
-      />
     </div>
-    <div class="game__actions-edit">
-      <button v-if="isEditMode" @click="sendSimpleAction('randomize-ships')">
-        Randomize
-      </button>
-      <button v-if="isEditMode" @click="sendSimpleAction('reset-ships')">
-        Reset
-      </button>
-      <button v-if="isGameMode || isWaitingMode" @click="handleLeaveGame()">Leave Game</button>
-    </div>
-    <div v-if="isGameMode && !isOpponentConnected">Opponent disconnected!</div>
   </div>
 </template>
 
@@ -105,6 +134,7 @@ import StatusWidget from '@/components/widgets/StatusWidget.vue'
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
 import { type Player, type Ship } from '@/types/GameTypes'
 import { $bus } from '@/utils/GlobalEmit'
+import { useToast } from 'vue-toastification'
 
 export default defineComponent({
   data() {
@@ -118,7 +148,9 @@ export default defineComponent({
       isPlayerTurn: true as boolean,
       isWaitingMode: false as boolean,
       isOpponentConnected: false as boolean,
-      friendGameroomID: null as string | null
+      friendGameroomID: null as string | null,
+      isLinkCopied: false as boolean,
+      toast: useToast()
     }
   },
   components: {
@@ -159,7 +191,7 @@ export default defineComponent({
       if (!this.friendGameroomID) {
         return ''
       }
-      return `${window.location.host}?id=${this.friendGameroomID}`
+      return `${window.location.host}${window.location.pathname}?id=${this.friendGameroomID}`
     }
   },
   methods: {
@@ -208,8 +240,10 @@ export default defineComponent({
           break
         case 'opponent-disconnected':
           this.isOpponentConnected = false
+          this.toast.error('Opponent disconnected from the game.')
           break
         case 'host-disconnected':
+          this.toast.error('Host disconnected from the room.')
           this.isOpponentConnected = false
           this.handleLeaveGame()
           break
@@ -218,6 +252,10 @@ export default defineComponent({
             this.opponent.isReady = data.data.status
           }
           break
+        case 'error':
+          if (data.data.message) {
+            this.toast.error(data.data.message)
+          }
       }
     },
     sendMessage(message: string): void {
@@ -341,37 +379,138 @@ export default defineComponent({
         })
         this.sendMessage(message)
       }
+    },
+    onSuccessCopy() {
+      this.isLinkCopied = true
+      setTimeout(() => {
+        this.isLinkCopied = false
+      }, 1500)
     }
   }
 })
 </script>
 
 <style lang="scss" scoped>
+@import '../../assets/styles/_variables';
+
 .game {
   position: relative;
-  padding: 30px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 
   &__container {
+    position: relative;
+    background: $cl-bg-game;
+    min-height: 520px;
     display: flex;
-    gap: 30px;
+    gap: 20px;
+    padding: 30px;
+    padding-top: 30px;
+    align-items: start;
+
+    border: solid 3px $cl-primary;
+    border-radius: 5px;
+
+    &-wrap {
+      display: flex;
+      width: 100%;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+  }
+
+  &__shipcontainer {
+    margin-top: 30px;
+    border: solid 1px $cl-brdr-game;
+    border-radius: 5px;
+  }
+
+  &__gameboard {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 330px;
+    gap: 10px;
+  }
+
+  &__waitingroom {
+    margin-top: 30px;
+    margin-left: 30px;
+    padding: 10px;
+    border: solid 1px $cl-brdr-game;
+    border-radius: 5px;
+
+    max-width: 300px;
+    width: 100%;
+
+    &-link {
+      position: relative;
+      height: 30px;
+      width: 100%;
+
+      input {
+        width: 100%;
+        height: 100%;
+        padding: 5px;
+        background: $cl-bg-game;
+        font-size: 16px;
+        border: none;
+        color: $cl-text;
+        border-radius: 5px;
+
+        &:focus {
+          outline: none;
+          border: none;
+        }
+      }
+
+      img {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+      }
+    }
   }
 
   &__actions {
-    &-edit {
-      button {
-        cursor: pointer;
-      }
+    &-edit,
+    &-create {
+      display: flex;
+      gap: 5px;
+      margin-left: 30px;
     }
 
     &-create {
+      max-width: 300px;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      margin-top: 30px;
+    }
 
-      button {
-        cursor: pointer;
+    &-leave {
+      font-size: 16px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: solid 1px $cl-red;
+      color: $cl-red;
+
+      &:hover {
+        color: $cl-text;
+        background: $cl-red;
+        border: solid 1px $cl-red;
+        box-shadow: 0 0 0 1px $cl-red;
       }
     }
+  }
+}
+
+html[data-theme='light'] {
+  .copy-icon {
+    filter: invert(100%);
   }
 }
 </style>

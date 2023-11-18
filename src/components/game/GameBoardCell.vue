@@ -15,7 +15,8 @@
       'gameboard__cell-valid': !isGameMode && cell && cell.shipPlacementState == 'valid',
       'gameboard__cell-invalid': !isGameMode && cell && cell.shipPlacementState == 'invalid',
       'gameboard__cell-attack':
-        isGameMode && isPlayerTurn && !isPlayerGameBoard && cell && cell.state === 'empty'
+        isGameMode && isPlayerTurn && !isPlayerGameBoard && cell && cell.state === 'empty',
+      'gameboard__cell-noborder': (cell && cell.ship) || (cell && cell.state === 'hit')
     }"
   >
     <game-ship
@@ -31,7 +32,7 @@
       @dragleave="hoveredShip = false"
       @drop="hoveredShip = false"
     />
-    <span class="circle"></span>
+    <span class="circle" />
   </div>
 </template>
 <script lang="ts">
@@ -82,14 +83,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import '../../assets/styles/_variables';
+
 .gameboard__cell {
+  background: #adc3cc4d;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 30px;
   height: 30px;
-  border: 1px solid #d1bfbf;
+  border: 1px solid $cl-brdr-game;
+
+  &-noborder {
+    border: none;
+  }
 
   & + & {
     border-left: none;
@@ -100,33 +108,24 @@ export default defineComponent({
   }
 
   &-adjacent {
-    background: transparentize(#f5f2f2, 0.2);
+    background: transparentize(#628395, 0.7);
   }
 
   &-valid {
-    background: transparentize(#68a357, 0.6);
+    background: transparentize(#68a357, 0.3);
   }
 
   &-invalid {
-    background: transparentize(#ba1200, 0.6);
+    background: transparentize(#ba1200, 0.3);
   }
 
   &-hit {
     background-color: transparentize(#eca7a2, 0.6);
-    &:before,
-    &:after {
-      content: '';
-      height: 40px;
-      width: 1px;
-      background-color: #ff0000;
-    }
-
     &:before {
-      transform: rotate(45deg);
-    }
-
-    &:after {
-      transform: rotate(-45deg);
+      content: 'X';
+      font-size: 35px;
+      font-variant: small-caps;
+      color: $cl-red;
     }
   }
 

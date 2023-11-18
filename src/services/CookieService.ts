@@ -11,6 +11,7 @@ const { cookies } = useCookies()
  */
 export default class CookieService {
   private readonly userIdKey = 'uid'
+  private readonly themeKey = 'theme'
 
   /**
    * Get user ID stored in a cookie.
@@ -18,6 +19,14 @@ export default class CookieService {
    */
   getUserId(): string | null {
     return cookies.get(this.userIdKey)
+  }
+
+  /**
+   * Get theme type stored in a cookie.
+   * @returns The theme type (eg., light, dark).
+   */
+  getTheme(): string | null {
+    return cookies.get(this.themeKey)
   }
 
   /**
@@ -29,9 +38,24 @@ export default class CookieService {
   }
 
   /**
+   * Stores theme in a cookie for 30 days.
+   * @param userId The theme of the user.
+   */
+  setTheme(theme: string): void {
+    cookies.set(this.themeKey, theme, '30d')
+  }
+
+  /**
    * Remove user ID from the cookie.
    */
   removeUserId(): void {
     cookies.remove(this.userIdKey)
+  }
+
+  /**
+   * Remove theme from the cookie.
+   */
+  removeTheme(): void {
+    cookies.remove(this.themeKey)
   }
 }

@@ -20,6 +20,9 @@ export type Player = {
 
   /** True if player is ready to start the game. */
   isReady: boolean
+
+  /** The gameroom id of player's current game. */
+  gameRoomId?: string
 }
 
 /** Represents a gameboard for a player's game. */

@@ -4,16 +4,5 @@
   AUTHOR: Annija Karitone
 -->
 <template>
-  <GameContainer />
+  <div class="homepage">Homepage</div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-import GameContainer from '@/components/game/GameContainer.vue'
-
-export default defineComponent({
-  components: {
-    GameContainer
-  }
-})
-</script>
