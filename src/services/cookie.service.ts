@@ -1,5 +1,5 @@
 /**
- * FILENAME: CookieService.ts
+ * FILENAME: cookie.service.ts
  * AUTHOR: Annija Karitone
  */
 
@@ -9,9 +9,10 @@ const { cookies } = useCookies()
 /**
  * Service to handle data stored in the browser cookies.
  */
-export default class CookieService {
+export class CookieService {
   private readonly userIdKey = 'uid'
   private readonly themeKey = 'theme'
+  private readonly tokenKey = 'token'
 
   /**
    * Get user ID stored in a cookie.
@@ -27,6 +28,14 @@ export default class CookieService {
    */
   getTheme(): string | null {
     return cookies.get(this.themeKey)
+  }
+
+  /**
+   * Get theme type stored in a cookie.
+   * @returns The theme type (eg., light, dark).
+   */
+  getToken(): string | null {
+    return cookies.get(this.tokenKey)
   }
 
   /**
@@ -46,6 +55,14 @@ export default class CookieService {
   }
 
   /**
+   * Stores theme in a cookie for 30 days.
+   * @param userId The theme of the user.
+   */
+  setToken(token: string): void {
+    cookies.set(this.tokenKey, token, '30d')
+  }
+
+  /**
    * Remove user ID from the cookie.
    */
   removeUserId(): void {
@@ -58,4 +75,13 @@ export default class CookieService {
   removeTheme(): void {
     cookies.remove(this.themeKey)
   }
+
+  /**
+   * Remove theme from the cookie.
+   */
+  removeToken(): void {
+    cookies.remove(this.tokenKey)
+  }
 }
+
+export default new CookieService()

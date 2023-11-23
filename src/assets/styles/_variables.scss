@@ -11,9 +11,9 @@ $cl-red: #f85149;
 html[data-theme='light'] {
   --cl-text: #080417;
   --cl-bg: #fff;
-  --cl-bg-navbar: #62839550;
-  --cl-bg-navbar-account: #fff;
-  --cl-bg-game: #62839520;
+  --cl-bg-navbar: #cdd8de;
+  --cl-bg-navbar-account: #8da5b2;
+  --cl-bg-card: #62839520;
   --cl-brdr-game: #d1bfbf;
   --cl-bg-error: #f85149;
   --cl-btn-text-hover: #be0afa;
@@ -27,10 +27,10 @@ html[data-theme='dark'] {
   --cl-text: #fff;
   --cl-bg: #080417;
   --cl-bg-navbar: #080417;
-  --cl-bg-navbar-account: #080417;
-  --cl-bg-game: #62839570;
+  --cl-bg-navbar-account: #3e5162;
+  --cl-bg-card: #62839570;
   --cl-brdr-game: #080417;
-  --cl-bg-error: #080417;
+  --cl-bg-error: #f85149;
 
   --cl-btn-text-hover: #fff;
   --cl-btn-bg-hover: #be0afa;
@@ -46,7 +46,7 @@ $cl-text: var(--cl-text);
 $cl-bg: var(--cl-bg);
 $cl-bg-navbar: var(--cl-bg-navbar);
 $cl-bg-navbar-account: var(--cl-bg-navbar-account);
-$cl-bg-game: var(--cl-bg-game);
+$cl-bg-card: var(--cl-bg-card);
 $cl-brdr-game: var(--cl-brdr-game);
 
 $cl-btn-text-hover: var(--cl-btn-text-hover);

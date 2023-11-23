@@ -32,7 +32,7 @@
         :is-edit-mode="isEditMode"
         :is-player-turn="isPlayerTurn"
         :is-player-game-board="isPlayerGameBoard"
-        @click="cell.state == 'empty' && $emit('attackCell', rowIndex, colIndex)"
+        @click="cell.state == 'empty' && isPlayerTurn && $emit('attackCell', rowIndex, colIndex)"
         @dragover.prevent
         @dragover="!cell.ship && $emit('dragOver', rowIndex, colIndex)"
         @dragleave="!cell.ship && $emit('dragLeave', rowIndex, colIndex)"

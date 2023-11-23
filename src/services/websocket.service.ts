@@ -1,24 +1,21 @@
 /**
- * FILENAME: WebSocketService.ts
+ * FILENAME: websocket.service.ts
  * AUTHOR: Annija Karitone
  */
 
-import { type MessageHandler, type WebsocketMessage } from '@/types/WebSocketTypes'
-import CookieService from './CookieService'
+import { type WebsocketMessage } from '@/types/WebSocketTypes'
+import cookieService from './cookie.service'
 import { $bus } from '@/utils/GlobalEmit'
 
 /**
  * Service to handle interaction with WebSocket for multiplayer connection.
  */
-export default class WebSocketService {
+export class WebSocketService {
   private socket: WebSocket // Connection to the websocket
-  private messageHandlers: MessageHandler[] = [] // Methods linked to websocket 'on message' event
-  private cookieService: CookieService // Connection to the browser session
 
   constructor() {
     // Handle user session connection sync ID
-    this.cookieService = new CookieService()
-    this.socket = new WebSocket('ws://localhost:8080')
+    this.socket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL)
 
     // Bind the event listener functions to the class instance
     this.handleOpen = this.handleOpen.bind(this)
@@ -58,16 +55,6 @@ export default class WebSocketService {
   }
 
   /**
-   * Adds Message Handler method to the list to be called when a Websocket message is recieved.
-   * @param handler The message handler method.
-   */
-  addMessageHandler(handler: MessageHandler): void {
-    console.log('adding a message')
-
-    this.messageHandlers.push(handler)
-  }
-
-  /**
    * Manage actions on Websocket connection start.
    * @param event Data passed from a Websocket open event.
    */
@@ -84,12 +71,11 @@ export default class WebSocketService {
     const data: WebsocketMessage = JSON.parse(event.data)
     console.log('Received from server:', data)
 
-    if (data.data && data.data.player && !this.cookieService.getUserId()) {
-      this.cookieService.setUserId(data.data.player.id)
+    if (data.data && data.data.player && !cookieService.getUserId()) {
+      cookieService.setUserId(data.data.player.id)
     }
 
-    // Call all registered message handlers
-    this.messageHandlers.forEach((handler) => handler(data))
+    $bus.emit('websocket-message', data)
   }
 
   /**
@@ -108,3 +94,5 @@ export default class WebSocketService {
     this.socket.close()
   }
 }
+
+export default new WebSocketService()

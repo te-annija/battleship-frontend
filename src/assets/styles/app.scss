@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
 @import './_overrideToastification.scss';
 @import './_variables.scss';
+@import './formkit.scss';
 
 html,
 body,
@@ -104,6 +105,12 @@ body {
   font-family: 'Patrick Hand', cursive;
 }
 
+h1,
+h2,
+h3 {
+  font-weight: bold;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -149,6 +156,29 @@ button {
     0px 1px 2px transparentize($cl-primary, 0.5),
     0px 2px 4px transparentize($cl-primary, 0.5),
     0px 4px 8px transparentize($cl-primary, 0.5);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  width: 100%;
+  background: $cl-bg-card;
+  padding: 30px;
+  border: solid 3px $cl-primary;
+  border-radius: 5px;
+}
+
+.link {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.text-center { 
+  text-align: center;
 }
 
 @keyframes spin {

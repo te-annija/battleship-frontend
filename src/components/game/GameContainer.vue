@@ -4,8 +4,8 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div v-if="player" class="game">
-    <div class="game__container box-shadow">
+  <div v-if="player" class="game container">
+    <div class="game__container card box-shadow">
       <ship-container
         class="game__shipcontainer"
         v-if="player.gameboard && isEditMode"
@@ -127,14 +127,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import WebSocketService from '@/services/WebSocketService'
+import { WebSocketService } from '@/services/websocket.service'
 import GameBoard from './GameBoard.vue'
 import ShipContainer from './ShipContainer.vue'
 import StatusWidget from '@/components/widgets/StatusWidget.vue'
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
 import { type Player, type Ship } from '@/types/GameTypes'
 import { $bus } from '@/utils/GlobalEmit'
-import { useToast } from 'vue-toastification'
+import { useToast, POSITION } from 'vue-toastification'
 
 export default defineComponent({
   data() {
@@ -160,7 +160,6 @@ export default defineComponent({
   },
   mounted() {
     this.socketService = new WebSocketService()
-    this.socketService.addMessageHandler(this.handleMessage)
 
     const params = new URL((document as any).location).searchParams
     if (params.get('id')) {
@@ -170,6 +169,7 @@ export default defineComponent({
     $bus.on('select-ship', this.handleSelectShip)
     $bus.on('toggle-ship-rotation', this.handleToggleShipRotation)
     $bus.on('websocket-connected', this.handleWebsocketConnected)
+    $bus.on('websocket-message', this.handleWebsocketMessage)
   },
   beforeUnmount() {
     if (this.socketService) {
@@ -178,6 +178,7 @@ export default defineComponent({
     $bus.off('select-ship', this.handleSelectShip)
     $bus.off('toggle-ship-rotation', this.handleToggleShipRotation)
     $bus.off('websocket-connected', this.handleWebsocketConnected)
+    $bus.off('websocket-message', this.handleWebsocketMessage)
   },
   computed: {
     isShipsPlaced() {
@@ -201,7 +202,7 @@ export default defineComponent({
     handleToggleShipRotation(ship: Ship) {
       ship.position.isVertical = !ship.position.isVertical
     },
-    handleMessage(data: WebsocketMessage): void {
+    handleWebsocketMessage(data: WebsocketMessage): void {
       switch (data.type) {
         case 'player':
           if (data.data.player) {
@@ -240,10 +241,12 @@ export default defineComponent({
           break
         case 'opponent-disconnected':
           this.isOpponentConnected = false
-          this.toast.error('Opponent disconnected from the game.')
+          this.toast.error('Opponent disconnected from the game.', {
+            position: POSITION.BOTTOM_CENTER
+          })
           break
         case 'host-disconnected':
-          this.toast.error('Host disconnected from the room.')
+          this.toast.error('Host disconnected from the room.', { position: POSITION.BOTTOM_CENTER })
           this.isOpponentConnected = false
           this.handleLeaveGame()
           break
@@ -254,7 +257,7 @@ export default defineComponent({
           break
         case 'error':
           if (data.data.message) {
-            this.toast.error(data.data.message)
+            this.toast.error(data.data.message, { position: POSITION.BOTTOM_CENTER })
           }
       }
     },
@@ -394,23 +397,12 @@ export default defineComponent({
 @import '../../assets/styles/_variables';
 
 .game {
-  position: relative;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-
   &__container {
     position: relative;
-    background: $cl-bg-game;
     min-height: 520px;
     display: flex;
     gap: 20px;
-    padding: 30px;
-    padding-top: 30px;
     align-items: start;
-
-    border: solid 3px $cl-primary;
-    border-radius: 5px;
 
     &-wrap {
       display: flex;
@@ -453,7 +445,7 @@ export default defineComponent({
         width: 100%;
         height: 100%;
         padding: 5px;
-        background: $cl-bg-game;
+        background: $cl-bg-card;
         font-size: 16px;
         border: none;
         color: $cl-text;

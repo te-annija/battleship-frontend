@@ -1,3 +1,8 @@
+<!-- 
+  FILENAME: NavbarHeader.vue
+  DESCRIPTION: The component renders navbar with main links on the top of the page.
+  AUTHOR: Annija Karitone 
+-->
 <template>
   <div class="navbar__top-wrapper box-shadow">
     <nav class="navbar__top">
@@ -14,23 +19,31 @@
           <input type="checkbox" v-model="isLightTheme" />
           <span class="navbar__top-theme_slider box-shadow"></span>
         </label>
-
-        <div class="navbar__top-account box-shadow">
-          <img
-            alt="Account"
-            class="navbar__top-account-image"
-            src="@/assets/icons/account.svg"
-            width="35"
-            height="35"
-          />
-          <div>Username123</div>
-          <img
-            alt="Open"
-            class="navbar__top-account-open"
-            src="@/assets/icons/open.svg"
-            width="35"
-            height="35"
-          />
+        <div v-if="user" class="navbar__top-account box-shadow">
+          <div class="navbar__top-account-wrapper">
+            <img
+              alt="Account"
+              class="navbar__top-account-image"
+              src="@/assets/icons/account.svg"
+              width="35"
+              height="35"
+            />
+            <div>{{ user.username }}</div>
+            <img
+              alt="Open"
+              class="navbar__top-account-open"
+              src="@/assets/icons/open.svg"
+              width="35"
+              height="35"
+              @click="toggleDropdown"
+            />
+          </div>
+          <div v-if="showDropdown" class="navbar__top-account-dropdown box-shadow">
+            <div @click="logOutHandler">Log Out</div>
+          </div>
+        </div>
+        <div v-else>
+          <RouterLink to="/login"> Log In </RouterLink>
         </div>
       </div>
     </nav>
@@ -39,7 +52,9 @@
 <script lang="ts">
 import { RouterLink } from 'vue-router'
 import { defineComponent } from 'vue'
-import CookieService from '@/services/CookieService'
+import cookieService from '@/services/cookie.service'
+import { useUserStore } from '@/stores/user'
+import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({
   components: {
@@ -47,19 +62,22 @@ export default defineComponent({
   },
   data() {
     return {
-      cookieService: new CookieService() as CookieService,
-      isLightTheme: false as boolean
+      isLightTheme: false as boolean,
+      showDropdown: false
     }
   },
   watch: {
     isLightTheme(val) {
       const theme: string = val ? 'light' : 'dark'
-      this.cookieService.setTheme(theme)
+      cookieService.setTheme(theme)
       document.documentElement.setAttribute('data-theme', theme)
     }
   },
+  computed: {
+    ...mapState(useUserStore, ['user'])
+  },
   mounted() {
-    let theme: string = this.cookieService.getTheme() ?? ''
+    let theme: string = cookieService.getTheme() ?? ''
 
     if (theme === '') {
       theme =
@@ -70,6 +88,16 @@ export default defineComponent({
 
     document.documentElement.setAttribute('data-theme', theme)
     this.isLightTheme = theme === 'light'
+  },
+  methods: {
+    ...mapActions(useUserStore, ['logout']),
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown
+    },
+    logOutHandler() {
+      this.logout()
+      this.showDropdown = false
+    }
   }
 })
 </script>
@@ -84,6 +112,16 @@ export default defineComponent({
   align-items: center;
   font-size: 16px;
 
+  a {
+    color: $cl-text;
+    text-transform: uppercase;
+
+    &:hover,
+    &.router-link-exact-active {
+      border-bottom: solid 1px $cl-primary;
+    }
+  }
+
   &-wrapper {
     width: 100%;
     height: 60px;
@@ -97,40 +135,36 @@ export default defineComponent({
     display: flex;
     align-items: center;
     gap: 20px;
-    a {
-      color: $cl-text;
-      text-transform: uppercase;
-
-      &:hover,
-      &.router-link-exact-active {
-        border-bottom: solid 1px $cl-primary;
-      }
-    }
   }
 
   &-right {
     margin-left: auto;
     display: flex;
+    align-items: center;
     gap: 10px;
   }
 
   &-account {
-    background: transparentize($cl-secondary, 0.4);
+    background: $cl-bg-navbar-account;
     border: solid 2px $cl-primary;
     min-width: 150px;
     width: fit-content;
-    height: 27px;
     border-radius: 20px;
     border-left: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
     color: $cl-text;
+    position: relative;
+
+    &-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      height: 27px;
+    }
 
     &-image {
       object-fit: cover;
       border-radius: 50%;
-      background: $cl-bg-navbar-account;
+      background: $cl-bg-navbar;
     }
 
     &-open {
@@ -139,6 +173,30 @@ export default defineComponent({
       margin-left: auto;
       margin-right: 10px;
       cursor: pointer;
+    }
+
+    &-dropdown {
+      position: absolute;
+      left: 0px;
+      top: 35px;
+      min-width: 150px;
+      background: $cl-bg-navbar-account;
+      border: 1px solid $cl-text;
+      border-radius: 5px;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      animation: growDown 300ms ease-in-out forwards;
+      transform-origin: top center;
+
+      div {
+        padding: 7px 10px;
+        cursor: pointer;
+        border-bottom: 1px solid $cl-text;
+
+        &:hover {
+          background: transparentize($cl-secondary, 0.6);
+        }
+      }
     }
   }
 
@@ -205,6 +263,18 @@ export default defineComponent({
   }
   100% {
     -webkit-transform: translateX(0px);
+  }
+}
+
+@keyframes growDown {
+  0% {
+    transform: scaleY(0);
+  }
+  80% {
+    transform: scaleY(1.1);
+  }
+  100% {
+    transform: scaleY(1);
   }
 }
 </style>

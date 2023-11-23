@@ -3,8 +3,8 @@
 // Override the Toastification variables
 $vt-toast-min-width: 150px;
 $vt-toast-max-width: 1200px;
-$vt-toast-min-height: 40px;
-$vt-toast-max-height: 50px;
+$vt-toast-min-height: 100px;
+$vt-toast-max-height: 150px;
 $vt-font-family: 'Patrick Hand', cursive;
 $vt-color-error: var(--cl-bg-error);
 
@@ -18,21 +18,25 @@ $vt-color-error: var(--cl-bg-error);
 @import 'vue-toastification/src/scss/animations/_bounce';
 
 // Override Toastification styles
+
 .#{$vt-namespace}__toast {
   padding: 5px 20px;
   border-radius: 5px;
-  width: 100vw;
+  align-items: center;
+
+  &.bottom-center {
+    width: 100vw;
+    min-height: 50px;
+    height: 50px;
+  }
 
   &--error {
     border: solid 2px $cl-red;
   }
-
-  &.top-center {
-    top: 60px;
-  }
 }
 
 .#{$vt-namespace}__close-button {
+  align-self: flex-start;
   &:hover {
     border: none !important;
     color: #fff !important;
