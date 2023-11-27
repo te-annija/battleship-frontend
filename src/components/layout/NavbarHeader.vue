@@ -125,7 +125,6 @@ export default defineComponent({
   &-wrapper {
     width: 100%;
     height: 60px;
-    margin-bottom: 50px;
     background-color: $cl-bg-navbar;
     border-bottom: solid 2px $cl-primary;
   }

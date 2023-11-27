@@ -13,11 +13,12 @@ html[data-theme='light'] {
   --cl-bg: #fff;
   --cl-bg-navbar: #cdd8de;
   --cl-bg-navbar-account: #8da5b2;
-  --cl-bg-card: #62839520;
+  --cl-bg-card: #ebeff2;
   --cl-brdr-game: #d1bfbf;
   --cl-bg-error: #f85149;
   --cl-btn-text-hover: #be0afa;
   --cl-btn-bg-hover: none;
+  --cl-bg-overlay: #00000060;
 
   --bg-rotate: url(../icons/rotate.svg);
 }
@@ -28,12 +29,14 @@ html[data-theme='dark'] {
   --cl-bg: #080417;
   --cl-bg-navbar: #080417;
   --cl-bg-navbar-account: #3e5162;
-  --cl-bg-card: #62839570;
+  --cl-bg-card: #2f3c4e;
   --cl-brdr-game: #080417;
   --cl-bg-error: #f85149;
 
   --cl-btn-text-hover: #fff;
   --cl-btn-bg-hover: #be0afa;
+  --cl-bg-overlay: #000000b0;
+
 
   --bg-rotate: url(../icons/rotate-white.svg);
 }
@@ -51,5 +54,7 @@ $cl-brdr-game: var(--cl-brdr-game);
 
 $cl-btn-text-hover: var(--cl-btn-text-hover);
 $cl-btn-bg-hover: var(--cl-btn-bg-hover);
+
+$cl-bg-overlay: var(--cl-bg-overlay);
 
 $bg-rotate: var(--bg-rotate);
