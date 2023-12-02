@@ -5,11 +5,14 @@
 -->
 <template>
   <div class="app">
-    <navbar-header />
-    <div class="background"/>
-    <main class="main">
-      <RouterView />
-    </main>
+    <div class="wrapper" v-if="!isAdminPage">
+      <navbar-header />
+      <div class="background" />
+      <main class="main">
+        <router-view />
+      </main>
+    </div>
+    <router-view v-else />
   </div>
 </template>
 
@@ -23,23 +26,28 @@ export default defineComponent({
   components: {
     RouterView,
     NavbarHeader
+  },
+  computed: {
+    isAdminPage() {
+      return this.$route.name ? this.$route.name.toString().includes('admin') : false
+    }
   }
 })
 </script>
 <style lang="scss" scoped>
 @import './assets/styles/_variables';
-.app { 
+.app {
   height: 100vh;
 }
-.background { 
+.background {
   z-index: -5;
   position: absolute;
-  top: 0; 
-  right: 0; 
+  top: 0;
+  right: 0;
   width: 100%;
   height: 100%;
   background: url(assets/bg.png);
-  background-position: center; 
+  background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -48,5 +56,9 @@ export default defineComponent({
   height: calc(100% - 60px);
   padding-top: 50px;
   background: $cl-bg-overlay;
+}
+
+.wrapper {
+  height: 100%;
 }
 </style>

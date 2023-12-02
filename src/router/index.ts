@@ -10,7 +10,15 @@ import GamePage from '@/pages/GamePage.vue'
 import TournamentPage from '@/pages/TournamentPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
+import AdminPage from '@/pages/AdminPage.vue'
+import SettingsPage from '@/pages/SettingsPage.vue'
+import UserManagement from '@/components/admin/UserManagement.vue'
+import AdminDashboard from '@/components/admin/AdminDashboard.vue'
 import { useUserStore } from '@/stores/user'
+import authService from '@/services/auth.service'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,23 +41,90 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
+      meta: {
+        requiresGuest: true
+      },
       component: LoginPage
     },
     {
       path: '/register',
       name: 'register',
+      meta: {
+        requiresGuest: true
+      },
       component: RegisterPage
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      meta: {
+        requiresUser: true
+      },
+      component: SettingsPage
+    },
+    {
+      path: '/admin',
+      component: AdminPage,
+      children: [
+        {
+          path: '',
+          name: 'admin',
+          component: AdminDashboard,
+          meta: {
+            title: 'Dashboard',
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'users',
+          name: 'admin-users',
+          component: UserManagement,
+          meta: {
+            title: 'User Management',
+            requiresAdmin: true
+          }
+        }
+      ]
     }
   ]
 })
 
+/** Frontend middleware to check if user is allowed to enter the page. */
 router.beforeEach(async (to) => {
-  const publicPages = ['/login', '/register']
-  const authNotRequired = publicPages.includes(to.path)
   const userStore = useUserStore()
+  if (userStore.user) {
+    /** Handle if registred user is still authorized to access resources. */
+    try {
+      await authService.authorizeUser()
+    } catch (error: any) {
+      userStore.user = null
+      toast.error('You have been logged out!')
+      return '/login'
+    }
 
-  if (authNotRequired && userStore.user) {
-    return '/'
+    /** Handle if registred user is not accessing guest pages. */
+    const requiresGuest = to.matched.some((record) => record.meta.requiresGuest)
+    if (requiresGuest) {
+      return '/'
+    }
+  } else {
+    /** Handle if guest user is not accessing registred user pages. */
+    const requiresUser = to.matched.some((record) => record.meta.requiresUser)
+    if (requiresUser) {
+      toast.error('You need to be logged in to access this!')
+      return '/login'
+    }
+  }
+
+  /** Handle if user is authorized to access admin pages. */
+  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
+  if (requiresAdmin) {
+    try {
+      await authService.authorizeAdmin()
+    } catch (error: any) {
+      toast.error('You are not authorized to access admin panel.')
+      return '/login'
+    }
   }
 })
 

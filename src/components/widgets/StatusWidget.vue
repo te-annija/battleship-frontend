@@ -1,5 +1,5 @@
 <!-- 
-  FILENAME: StatusCirle.vue
+  FILENAME: StatusWidget.vue
   DESCRIPTION: The component renders a circle that represents status - green or red.
   AUTHOR: Annija Karitone 
 -->

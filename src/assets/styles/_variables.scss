@@ -20,6 +20,9 @@ html[data-theme='light'] {
   --cl-btn-bg-hover: none;
   --cl-bg-overlay: #00000060;
 
+  --cl-bg-admin: #cdd8de;
+  --cl-bg-admin-overlay: rgba(0, 0, 0, 0.5);
+
   --bg-rotate: url(../icons/rotate.svg);
 }
 
@@ -37,6 +40,8 @@ html[data-theme='dark'] {
   --cl-btn-bg-hover: #be0afa;
   --cl-bg-overlay: #000000b0;
 
+  --cl-bg-admin: #2f3c4e;
+  --cl-bg-admin-overlay: rgba(61, 60, 60, 0.5);
 
   --bg-rotate: url(../icons/rotate-white.svg);
 }
@@ -56,5 +61,8 @@ $cl-btn-text-hover: var(--cl-btn-text-hover);
 $cl-btn-bg-hover: var(--cl-btn-bg-hover);
 
 $cl-bg-overlay: var(--cl-bg-overlay);
+
+$cl-bg-admin: var(--cl-bg-admin);
+$cl-bg-admin-overlay: var(--cl-bg-admin-overlay);
 
 $bg-rotate: var(--bg-rotate);

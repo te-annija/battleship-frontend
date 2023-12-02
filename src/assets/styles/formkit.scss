@@ -21,6 +21,14 @@
     border-radius: 5px;
     width: 100%;
     color: $cl-text;
+
+    &[type='checkbox'] {
+      width: 20px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
   }
 
   .formkit-help {
@@ -47,5 +55,11 @@
     .formkit-input {
       border-color: $cl-red;
     }
+  }
+}
+
+html[data-theme='dark'] {
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
   }
 }

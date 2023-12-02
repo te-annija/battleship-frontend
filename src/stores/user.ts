@@ -6,6 +6,7 @@
 import { defineStore } from 'pinia'
 import { type User } from '@/types/User'
 import AuthService from '@/services/auth.service'
+import userService from '@/services/user.service'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
@@ -39,6 +40,7 @@ export const useUserStore = defineStore('user', {
         await AuthService.logout()
         this.user = null
         toast.success('Logged out Successfully!')
+        this.$router.push({ path: '/login' })
       } catch (error: any) {
         toast.error(error.message)
       }
@@ -54,6 +56,34 @@ export const useUserStore = defineStore('user', {
         const data: any = await AuthService.register(username, password, confirm)
         this.$router.push({ path: '/login' })
         toast.success(data.message)
+      } catch (error: any) {
+        toast.error(error.message)
+      }
+    },
+    /**
+     * Handle request to modify current user data.
+     * @param userData The data to update for the user model.
+     */
+    async update(userData: any) {
+      try {
+        const data: any = await userService.updateUser(userData)
+        this.user = data.user
+        toast.success(data.message)
+      } catch (error: any) {
+        toast.error(error.message)
+      }
+    },
+    /**
+     * Handle request to deactivate current user (solf-delete).
+     * @param userId The unique identifier of the user to deactivate.
+     */
+    async delete(userId: number) {
+      try {
+        const data: any = await userService.deleteUser(userId.toString())
+        toast.success(data.message)
+        await AuthService.logout()
+        this.$router.push({ path: '/login' })
+        this.user = null
       } catch (error: any) {
         toast.error(error.message)
       }
