@@ -36,7 +36,7 @@
             <button v-if="isEditMode" @click="sendSimpleAction('reset-ships')">Reset</button>
             <button
               class="game__actions-leave"
-              v-if="isGameMode || isWaitingMode"
+              v-if="(isGameMode || isWaitingMode) && !isGameOverMode"
               @click="handleLeaveGame()"
             >
               Leave Game
@@ -112,13 +112,23 @@
                   <img v-else alt="Copied" src="@/assets/icons/copied.svg" height="20" />
                 </div>
               </div>
-              <div v-if="friendGameroomID && isOpponentConnected">
+              <div v-if="(friendGameroomID || player.gameRoomId) && isOpponentConnected">
                 <button :disabled="!isShipsPlaced" @click="toggleReady()">
                   {{ player.isReady ? 'Not Ready' : 'Ready' }}
                 </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-if="isGameOverMode || (isGameMode && !isOpponentConnected)" class="game__overlay">
+        <div class="game__overlay-content">
+          <h2 v-if="isGameOverMode">{{ hasWon ? 'You won the game!' : 'You lost the game!' }}</h2>
+          <button v-if="isGameOverMode && isOpponentConnected" @click="handleRematch()">
+            Rematch
+          </button>
+          <div v-else>Oppontent left the game.</div>
+          <button class="btn-red" @click="handleLeaveGame()">Leave Game</button>
         </div>
       </div>
     </div>
@@ -147,9 +157,12 @@ export default defineComponent({
       isEditMode: true as boolean,
       isPlayerTurn: true as boolean,
       isWaitingMode: false as boolean,
+      isGameOverMode: false as boolean,
+      isRematchMode: false as boolean,
       isOpponentConnected: false as boolean,
       friendGameroomID: null as string | null,
       isLinkCopied: false as boolean,
+      hasWon: false as boolean,
       toast: useToast()
     }
   },
@@ -225,9 +238,9 @@ export default defineComponent({
           break
         case 'player-joined':
           if (!this.player) return
-          this.player.isReady = false
           this.isWaitingMode = true && !this.isGameMode
-          this.isEditMode = this.friendGameroomID ? true && !this.isGameMode : false
+          this.isEditMode =
+            this.friendGameroomID || this.isOpponentConnected ? true && !this.isGameMode : false
           break
         case 'opponent':
           this.isOpponentConnected = true
@@ -241,18 +254,29 @@ export default defineComponent({
           break
         case 'opponent-disconnected':
           this.isOpponentConnected = false
-          this.toast.error('Opponent disconnected from the game.', {
-            position: POSITION.BOTTOM_CENTER
-          })
+          if (this.isEditMode) {
+            this.toast.error('Opponent disconnected from the room.', {
+              position: POSITION.BOTTOM_CENTER
+            })
+          }
+
+          if (this.isGameOverMode || this.isRematchMode) {
+            this.handleLeaveGame()
+          }
+
           break
         case 'host-disconnected':
-          this.toast.error('Host disconnected from the room.', { position: POSITION.BOTTOM_CENTER })
-          this.isOpponentConnected = false
           this.handleLeaveGame()
           break
         case 'ready-status':
           if (this.opponent && data.data.status) {
             this.opponent.isReady = data.data.status
+          }
+          break
+        case 'game-ended':
+          this.isGameOverMode = true
+          if (data.data) {
+            this.hasWon = data.data.hasWon
           }
           break
         case 'error':
@@ -338,7 +362,10 @@ export default defineComponent({
       this.isGameMode = false
       this.isEditMode = true
       this.isWaitingMode = false
+      this.isGameOverMode = false
       this.isOpponentConnected = false
+      this.isRematchMode = false
+      this.opponent = null
       this.friendGameroomID = null
       this.$router.push({})
     },
@@ -374,6 +401,18 @@ export default defineComponent({
           this.sendSimpleAction('create-room', { type: 'friend' })
           break
       }
+    },
+    handleRematch() {
+      if (!this.player || !this.opponent) {
+        this.toast.error('En error happened. You left the game!')
+        return
+      }
+      this.sendSimpleAction('rematch-game')
+      this.isGameMode = false
+      this.isEditMode = true
+      this.isWaitingMode = true
+      this.isGameOverMode = false
+      this.isRematchMode = true
     },
     handleWebsocketConnected() {
       if (this.socketService && this.friendGameroomID) {
@@ -424,6 +463,29 @@ export default defineComponent({
     width: 100%;
     max-width: 330px;
     gap: 10px;
+  }
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; /* Ensure the overlay is above other elements */
+
+    &-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px;
+      background-color: $cl-bg-card; /* Adjust opacity as needed */
+      border-radius: 10px;
+    }
   }
 
   &__waitingroom {

@@ -94,5 +94,3 @@ export class WebSocketService {
     this.socket.close()
   }
 }
-
-export default new WebSocketService()

@@ -197,7 +197,7 @@ export default defineComponent({
     },
     async applyFilters() {
       this.filterParams = this.tableHeaders
-        .filter((header) => header.filterValue !== '') 
+        .filter((header) => header.filterValue !== '')
         .map((header) => `${header.field}:${header.filterValue}`)
         .join(',')
       this.fetchUsers()

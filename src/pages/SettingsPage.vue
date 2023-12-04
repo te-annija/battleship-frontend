@@ -116,7 +116,7 @@ export default defineComponent({
     &-section {
       position: relative;
     }
-    
+
     &-change {
       color: blue;
       cursor: pointer;
