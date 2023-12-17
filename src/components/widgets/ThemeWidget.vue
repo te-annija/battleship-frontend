@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import cookieService from '@/services/cookie.service'
+import cookieService from '@/services/CookieService'
 
 export default defineComponent({
   data() {
@@ -109,3 +109,4 @@ export default defineComponent({
   }
 }
 </style>
+@/services/CookieService

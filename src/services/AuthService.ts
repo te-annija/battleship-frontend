@@ -1,10 +1,10 @@
 /**
- * FILENAME: auth.service.ts
+ * FILENAME: AuthService.ts
  * AUTHOR: Annija Karitone
  */
 
 import axios, { type AxiosResponse } from 'axios'
-import cookieService from './cookie.service'
+import cookieService from './CookieService'
 
 const API_URL = `${import.meta.env.VITE_API_URL}/auth`
 

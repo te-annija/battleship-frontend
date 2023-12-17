@@ -69,7 +69,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import UserService from '@/services/user.service'
+import UserService from '@/services/UserService'
 import EditUserModal from './user/EditUserModal.vue'
 import CreateUserModal from './user/CreateUserModal.vue'
 import DeleteUserModal from './user/DeleteUserModal.vue'
@@ -268,3 +268,4 @@ export default defineComponent({
   }
 }
 </style>
+@/services/UserService

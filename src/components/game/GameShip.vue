@@ -26,7 +26,11 @@
       v-bind:key="index"
       v-for="index in ship.size"
     />
-    <div class="ship-rotate" v-if="!ship.isOnBoard && ship.size > 1" @click="emitToggleRotation" />
+    <div
+      class="ship-rotate"
+      v-if="isEditMode && !ship.isOnBoard && ship.size > 1"
+      @click="emitToggleRotation"
+    />
   </div>
 </template>
 <script lang="ts">

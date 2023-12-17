@@ -1,5 +1,5 @@
 /**
- * FILENAME: cookie.service.ts
+ * FILENAME: CookieService.ts
  * AUTHOR: Annija Karitone
  */
 

@@ -5,8 +5,8 @@
  */
 import { defineStore } from 'pinia'
 import { type User } from '@/types/User'
-import AuthService from '@/services/auth.service'
-import userService from '@/services/user.service'
+import AuthService from '@/services/AuthService'
+import userService from '@/services/UserService'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()

@@ -1,10 +1,10 @@
 /**
- * FILENAME: websocket.service.ts
+ * FILENAME: WebsocketService.ts
  * AUTHOR: Annija Karitone
  */
 
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
-import cookieService from './cookie.service'
+import cookieService from './CookieService'
 import { $bus } from '@/utils/GlobalEmit'
 
 /**

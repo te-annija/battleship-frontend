@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ModalTemplate from '../ModalTemplate.vue'
-import userService from '@/services/user.service'
+import userService from '@/services/UserService'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
@@ -70,3 +70,4 @@ export default defineComponent({
   }
 })
 </script>
+@/services/UserService

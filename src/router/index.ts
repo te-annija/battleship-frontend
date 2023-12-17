@@ -15,7 +15,7 @@ import SettingsPage from '@/pages/SettingsPage.vue'
 import UserManagement from '@/components/admin/UserManagement.vue'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
 import { useUserStore } from '@/stores/user'
-import authService from '@/services/auth.service'
+import authService from '@/services/AuthService'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()

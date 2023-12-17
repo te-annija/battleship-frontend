@@ -4,8 +4,13 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div v-if="player" class="game container">
-    <div class="game__container card box-shadow">
+  <div class="game container">
+    <div v-if="!player" class="game__container card box-shadow">
+      <div class="game__loading">
+        <div><span class="spinner" /> Loading ...</div>
+      </div>
+    </div>
+    <div v-if="player" class="game__container card box-shadow">
       <ship-container
         class="game__shipcontainer"
         v-if="player.gameboard && isEditMode"
@@ -45,8 +50,8 @@
         </div>
         <div v-if="isGameMode" class="game__gameboard">
           <game-board
-            v-if="isGameMode && player.enemyGameboard"
-            :gameboard="player.enemyGameboard"
+            v-if="isGameMode && player.attackGameboard"
+            :gameboard="player.attackGameboard"
             :is-game-mode="isGameMode"
             :is-edit-mode="false"
             :is-waiting-mode="isWaitingMode"
@@ -64,8 +69,8 @@
         </div>
 
         <div v-if="!isGameMode && isWaitingMode" class="game__waitingroom">
-          <div v-if="player.gameRoomId || friendGameroomID">
-            Gameroom ID: {{ player.gameRoomId || friendGameroomID }}
+          <div v-if="player.gameSessionId || friendGameSessionID">
+            Game Session ID: {{ player.gameSessionId || friendGameSessionID }}
           </div>
           <div>
             Players:
@@ -96,7 +101,7 @@
                   />
                 </p>
               </div>
-              <div v-if="friendGameroomID && !isOpponentConnected">
+              <div v-if="friendGameSessionID && !isOpponentConnected">
                 <div>Share this link with your friend:</div>
                 <div class="game__waitingroom-link">
                   <input v-model="generateFriendLink" readonly />
@@ -112,7 +117,7 @@
                   <img v-else alt="Copied" src="@/assets/icons/copied.svg" height="20" />
                 </div>
               </div>
-              <div v-if="(friendGameroomID || player.gameRoomId) && isOpponentConnected">
+              <div v-if="(friendGameSessionID || player.gameSessionId) && isOpponentConnected">
                 <button :disabled="!isShipsPlaced" @click="toggleReady()">
                   {{ player.isReady ? 'Not Ready' : 'Ready' }}
                 </button>
@@ -137,7 +142,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { WebSocketService } from '@/services/websocket.service'
+import { WebSocketService } from '@/services/WebsocketService'
 import GameBoard from './GameBoard.vue'
 import ShipContainer from './ShipContainer.vue'
 import StatusWidget from '@/components/widgets/StatusWidget.vue'
@@ -160,7 +165,7 @@ export default defineComponent({
       isGameOverMode: false as boolean,
       isRematchMode: false as boolean,
       isOpponentConnected: false as boolean,
-      friendGameroomID: null as string | null,
+      friendGameSessionID: null as string | null,
       isLinkCopied: false as boolean,
       hasWon: false as boolean,
       toast: useToast()
@@ -172,17 +177,20 @@ export default defineComponent({
     StatusWidget
   },
   mounted() {
-    this.socketService = new WebSocketService()
-
     const params = new URL((document as any).location).searchParams
     if (params.get('id')) {
-      this.friendGameroomID = params.get('id')
+      this.friendGameSessionID = params.get('id')
     }
+
+    setTimeout(() => {
+      this.socketService = new WebSocketService()
+    }, 1500)
 
     $bus.on('select-ship', this.handleSelectShip)
     $bus.on('toggle-ship-rotation', this.handleToggleShipRotation)
     $bus.on('websocket-connected', this.handleWebsocketConnected)
     $bus.on('websocket-message', this.handleWebsocketMessage)
+    $bus.on('websocket-disconnected', this.handleWebsocketDisconnected)
   },
   beforeUnmount() {
     if (this.socketService) {
@@ -192,6 +200,7 @@ export default defineComponent({
     $bus.off('toggle-ship-rotation', this.handleToggleShipRotation)
     $bus.off('websocket-connected', this.handleWebsocketConnected)
     $bus.off('websocket-message', this.handleWebsocketMessage)
+    $bus.off('websocket-disconnected', this.handleWebsocketDisconnected)
   },
   computed: {
     isShipsPlaced() {
@@ -202,13 +211,16 @@ export default defineComponent({
       )
     },
     generateFriendLink(): string {
-      if (!this.friendGameroomID) {
+      if (!this.friendGameSessionID) {
         return ''
       }
-      return `${window.location.host}${window.location.pathname}?id=${this.friendGameroomID}`
+      return `${window.location.host}${window.location.pathname}?id=${this.friendGameSessionID}`
     }
   },
   methods: {
+    handleConnectToWebsocket() {
+      this.socketService = new WebSocketService()
+    },
     handleSelectShip(ship: Ship) {
       this.selectedShip = ship
     },
@@ -230,7 +242,7 @@ export default defineComponent({
           break
         case 'game-created':
           if (data.data.id && data.data.type === 'friend') {
-            this.friendGameroomID = data.data.id
+            this.friendGameSessionID = data.data.id
             this.$router.push({
               query: { id: data.data.id }
             })
@@ -240,22 +252,23 @@ export default defineComponent({
           if (!this.player) return
           this.isWaitingMode = true && !this.isGameMode
           this.isEditMode =
-            this.friendGameroomID || this.isOpponentConnected ? true && !this.isGameMode : false
+            this.friendGameSessionID || this.isOpponentConnected ? true && !this.isGameMode : false
           break
         case 'opponent':
           this.isOpponentConnected = true
           this.opponent = data.data
           break
-        case 'player-turn':
-          this.isPlayerTurn = true
-          break
-        case 'opponent-turn':
-          this.isPlayerTurn = false
+        case 'game-turn':
+          if (data.data.isPlayerTurn) {
+            this.isPlayerTurn = data.data.isPlayerTurn
+          } else {
+            this.isPlayerTurn = false
+          }
           break
         case 'opponent-disconnected':
           this.isOpponentConnected = false
           if (this.isEditMode) {
-            this.toast.error('Opponent disconnected from the room.', {
+            this.toast.error('Opponent disconnected from the game.', {
               position: POSITION.BOTTOM_CENTER
             })
           }
@@ -366,7 +379,7 @@ export default defineComponent({
       this.isOpponentConnected = false
       this.isRematchMode = false
       this.opponent = null
-      this.friendGameroomID = null
+      this.friendGameSessionID = null
       this.$router.push({})
     },
     handleAttackCell(rowIndex: number, colIndex: number) {
@@ -391,22 +404,18 @@ export default defineComponent({
     startGame(gameMode: string) {
       switch (gameMode) {
         case 'random':
-          this.sendSimpleAction('join-room', { type: 'random' })
+          this.sendSimpleAction('join-game-random', { type: 'random' })
           this.isWaitingMode = true
           break
         case 'computer':
-          this.sendSimpleAction('create-room', { type: 'computer' })
+          this.sendSimpleAction('create-game', { type: 'computer' })
           break
         case 'friend':
-          this.sendSimpleAction('create-room', { type: 'friend' })
+          this.sendSimpleAction('create-game', { type: 'friend' })
           break
       }
     },
     handleRematch() {
-      if (!this.player || !this.opponent) {
-        this.toast.error('En error happened. You left the game!')
-        return
-      }
       this.sendSimpleAction('rematch-game')
       this.isGameMode = false
       this.isEditMode = true
@@ -415,12 +424,18 @@ export default defineComponent({
       this.isRematchMode = true
     },
     handleWebsocketConnected() {
-      if (this.socketService && this.friendGameroomID) {
-        const message: string = this.socketService.formatMessage('join-room', {
-          id: this.friendGameroomID
+      if (this.socketService && this.friendGameSessionID) {
+        const message: string = this.socketService.formatMessage('join-game-friend', {
+          id: this.friendGameSessionID
         })
         this.sendMessage(message)
       }
+    },
+    handleWebsocketDisconnected() {
+      this.player = null
+      setTimeout(() => {
+        this.socketService = new WebSocketService()
+      }, 1500)
     },
     onSuccessCopy() {
       this.isLinkCopied = true
@@ -449,6 +464,12 @@ export default defineComponent({
       justify-content: space-around;
       flex-wrap: wrap;
     }
+  }
+
+  &__loading {
+    margin: 0 auto;
+    align-self: center;
+    font-size: large;
   }
 
   &__shipcontainer {
@@ -568,3 +589,4 @@ html[data-theme='light'] {
   }
 }
 </style>
+@/services/WebsocketService

@@ -1,10 +1,10 @@
 /**
- * FILENAME: user.service.ts
+ * FILENAME: UserService.ts
  * AUTHOR: Annija Karitone
  */
 
 import axios, { type AxiosResponse } from 'axios'
-import authService from './auth.service'
+import authService from './AuthService'
 import type { User } from '@/types/User'
 
 const API_URL = `${import.meta.env.VITE_API_URL}/user`

@@ -16,13 +16,13 @@ export type Player = {
   gameboard?: Gameboard
 
   /** The results of the player's attacks on the enemy's gameboard. */
-  enemyGameboard?: Gameboard
+  attackGameboard?: Gameboard
 
   /** True if player is ready to start the game. */
   isReady: boolean
 
-  /** The gameroom id of player's current game. */
-  gameRoomId?: string
+  /** The id of the game session where player is currently playing. */
+  gameSessionId?: string
 }
 
 /** Represents a gameboard for a player's game. */
@@ -37,14 +37,14 @@ export type Gameboard = {
   coord_max: number
 
   /** A 2D grid containing board cells with the same rows and columns as size. */
-  grid: BoardCell[][]
+  grid: GameboardCell[][]
 
   /** All ships on the board. */
   ships: Ship[]
 }
 
 /** Represents an individual cell on the gameboard.*/
-export type BoardCell = {
+export type GameboardCell = {
   /** The state of the cell (e.g., empty, hit, missed). */
   state: string
 

@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ModalTemplate from '../ModalTemplate.vue'
-import userService from '@/services/user.service'
+import userService from '@/services/UserService'
 import { useToast } from 'vue-toastification'
 import type { PropType } from 'vue'
 import type { User } from '@/types/User'
@@ -56,3 +56,4 @@ export default defineComponent({
   }
 })
 </script>
+@/services/UserService
