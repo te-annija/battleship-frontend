@@ -34,18 +34,20 @@
         :is-player-game-board="isPlayerGameBoard"
         @click="cell.state == 'empty' && isPlayerTurn && $emit('attackCell', rowIndex, colIndex)"
         @dragover.prevent
-        @dragover="!cell.ship && $emit('dragOver', rowIndex, colIndex)"
-        @dragleave="!cell.ship && $emit('dragLeave', rowIndex, colIndex)"
+        @dragover="handleDragOverCell(rowIndex, colIndex, cell.ship)"
+        @dragleave="handleDragLeaveCell(rowIndex, colIndex, cell.ship)"
         @drop="handleDrop(rowIndex, colIndex, cell.shipPlacementState == 'valid')"
       />
     </div>
+    <p class="opacity text-center">{{ isPlayerGameBoard ? 'Your' : 'Attack' }} grid</p>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import GameBoardCell from './GameBoardCell.vue'
-import { type Gameboard } from '@/types/GameTypes'
+import { type Gameboard, type Ship } from '@/types/GameTypes'
+import { $bus } from '@/utils/GlobalEmit'
 
 export default defineComponent({
   components: {
@@ -73,13 +75,64 @@ export default defineComponent({
       required: true
     }
   },
+  data() {
+    return {
+      selectedShip: null as Ship | null
+    }
+  },
+  mounted() {
+    $bus.on('select-ship', this.handleSelectShip)
+  },
   methods: {
+    handleSelectShip(ship: Ship) {
+      this.selectedShip = ship
+    },
     handleDrop(rowIndex: number, colIndex: number, canDropShip: boolean) {
-      if (canDropShip) {
-        this.$emit('dropShip', rowIndex, colIndex)
-      } else {
-        this.$emit('dragLeave', rowIndex, colIndex)
+      if (this.selectedShip) {
+        this.$emit('dropShip', this.selectedShip, rowIndex, colIndex)
       }
+      this.handleDragLeaveCell(rowIndex, colIndex)
+    },
+    handleDragOverCell(rowIndex: number, colIndex: number, ship?: Ship) {
+      if (!ship || (this.selectedShip && ship && this.selectedShip.id === ship.id)) {
+        this.dragShip(rowIndex, colIndex, true)
+      }
+    },
+    handleDragLeaveCell(rowIndex: number, colIndex: number, ship?: Ship) {
+      if (!ship || (this.selectedShip && ship && this.selectedShip.id === ship.id)) {
+        this.dragShip(rowIndex, colIndex, false)
+      }
+    },
+    dragShip(row: number, col: number, isDragOver: boolean) {
+      const ship = this.selectedShip
+
+      if (!ship || !this.gameboard) return
+
+      let cells = []
+      let isValid = true
+
+      for (let i = 0; i < ship.size; i++) {
+        const rowIndex = ship.position.isVertical ? row + i : row
+        const colIndex = ship.position.isVertical ? col : col + i
+
+        if (!this.isValidCoordinates(rowIndex, colIndex)) {
+          isValid = false
+          break
+        }
+        const cell = this.gameboard.grid[rowIndex][colIndex]
+        cells.push(cell)
+        isValid = isValid && cell.state !== 'ship' && cell.state !== 'adjacent'
+      }
+
+      const shipPlacementState = isDragOver ? (isValid ? 'valid' : 'invalid') : undefined
+      for (let cell of cells) {
+        cell.shipPlacementState = shipPlacementState
+      }
+    },
+    isValidCoordinates(rowIndex: number, colIndex: number) {
+      if (!this.gameboard) return false
+      const boardSize: number = this.gameboard.size
+      return rowIndex < boardSize && colIndex < boardSize && rowIndex >= 0 && colIndex >= 0
     }
   }
 })

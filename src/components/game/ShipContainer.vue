@@ -4,27 +4,24 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="ship__container">
+  <div class="ships" :class="{ 'ships-inactive': !isEditMode }">
     <div v-for="type in shipTypes" :key="type">
       <p>{{ type }}</p>
-      <div class="ship__container-type">
+      <div class="ships__type">
         <div
-          class="ship__container-ship"
-          :class="{ 'ship__container-ship-vertical': ship.position.isVertical && !ship.isOnBoard }"
+          class="ships__ship"
+          :class="{ 'ships__ship-vertical': getShipIsVertical(ship.id) && !ship.isOnBoard }"
           v-for="ship in getShipsByType(type)"
           :key="ship.id"
         >
-          <div
-            class="ship__container-cell"
-            :class="{ 'ship__container-cell-placed': ship.isOnBoard }"
-            v-for="index in ship.size"
-            v-bind:key="index"
-          >
+          <div class="ships__cell" v-for="index in ship.size" v-bind:key="index">
             <game-ship
+              class="ships__ship-real"
               v-if="index == 1 && !ship.isOnBoard"
               :ship="ship"
               :is-game-mode="isGameMode"
               :is-edit-mode="isEditMode"
+              @toggleRotation="handleSetRotation"
             />
           </div>
         </div>
@@ -35,7 +32,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import GameShip from './GameShip.vue'
-import { type Ship as ShipInterface } from '@/types/GameTypes'
+import { type Ship, type Ship as ShipInterface } from '@/types/GameTypes'
 
 export default defineComponent({
   components: {
@@ -55,6 +52,11 @@ export default defineComponent({
       required: true
     }
   },
+  data() {
+    return {
+      shipsLocal: this.ships as ShipInterface[]
+    }
+  },
   computed: {
     shipTypes() {
       return Array.from(new Set(this.ships.map((ship) => ship.name)))
@@ -63,6 +65,17 @@ export default defineComponent({
   methods: {
     getShipsByType(type: string) {
       return this.ships.filter((ship) => ship.name === type)
+    },
+    getShipIsVertical(id: string) {
+      const ship = this.shipsLocal.find((ship) => ship.id === id)
+      return ship && ship.position.isVertical ? true : false
+    },
+    handleSetRotation(id: string, isVertical: boolean) {
+      const ship = this.shipsLocal.find((ship) => ship.id === id)
+
+      if (ship) {
+        ship.position.isVertical = isVertical
+      }
     }
   }
 })
@@ -70,38 +83,51 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../assets/styles/_variables';
 
-.ship__container {
+.ships {
   width: 225px;
   padding: 10px;
 
-  &-ship {
+  &-inactive {
+    opacity: 0.4;
+  }
+
+  &__ship {
     display: flex;
     flex-direction: row;
     align-items: center;
+    height: fit-content;
+    border: dotted 1px $cl-text;
+
+    &:not(.ships__ship-vertical) div:not(:first-child) {
+      border-left: dotted 1px $cl-text;
+    }
 
     &-vertical {
       flex-direction: column;
+
+      div:not(:first-child) {
+        border-top: dotted 1px $cl-text;
+      }
+    }
+
+    &-real {
+      background-color: $cl-bg-card;
+      position: relative;
+      top: -2px;
+      left: -2px;
     }
   }
 
-  &-type {
+  &__type {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     padding-bottom: 10px;
   }
 
-  &-cell {
+  &__cell {
     width: 30px;
     height: 30px;
-
-    &-placed {
-      border: dotted 1px $cl-text;
-    }
-
-    & + & {
-      border-left: none;
-    }
   }
 }
 </style>

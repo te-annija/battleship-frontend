@@ -13,6 +13,7 @@ import RegisterPage from '@/pages/RegisterPage.vue'
 import AdminPage from '@/pages/AdminPage.vue'
 import SettingsPage from '@/pages/SettingsPage.vue'
 import UserManagement from '@/components/admin/UserManagement.vue'
+import RankManagement from '@/components/admin/RankManagement.vue'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
 import { useUserStore } from '@/stores/user'
 import authService from '@/services/AuthService'
@@ -81,6 +82,15 @@ const router = createRouter({
           component: UserManagement,
           meta: {
             title: 'User Management',
+            requiresAdmin: true
+          }
+        },
+        {
+          path: 'ranks',
+          name: 'admin-ranks',
+          component: RankManagement,
+          meta: {
+            title: 'Rank Management',
             requiresAdmin: true
           }
         }

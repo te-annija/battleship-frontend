@@ -58,6 +58,8 @@ export default defineComponent({
   font-size: 16px;
 
   &-wrapper {
+    z-index: 100;
+    position: fixed;
     width: 100%;
     height: 60px;
     background-color: $cl-bg-navbar;

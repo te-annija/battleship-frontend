@@ -10,7 +10,7 @@ export type Player = {
   id: string
 
   /** The public name of the player. */
-  name: string
+  username: string
 
   /** The player's own gameboard. */
   gameboard?: Gameboard
@@ -53,6 +53,8 @@ export type GameboardCell = {
 
   /** Reference to an occupying ship, or null if the cell is empty*/
   ship?: Ship
+
+  adjacentCount: number
 }
 
 /** Represents battleship status. */
@@ -86,4 +88,13 @@ export type ShipPosition = {
 
   /** Indicates if the ship is oriented vertically or horizontally. */
   isVertical: boolean
+}
+
+/** Game container status and view. */
+export enum GameStatus {
+  Prepare,
+  Waiting,
+  WaitingActive,
+  Game,
+  GameEnded
 }

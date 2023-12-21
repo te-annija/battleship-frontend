@@ -1,6 +1,6 @@
 <!-- 
-  FILENAME: DeleteUserModal.vue
-  DESCRIPTION: Admin panel modal used for deleting an user entity.
+  FILENAME: DeleteRankModal.vue
+  DESCRIPTION: Admin panel modal used for deleting a rank entity.
   AUTHOR: Annija Karitone 
 -->
 <template>
@@ -8,7 +8,7 @@
     :isOpen="isOpen"
     :titleText="titleText"
     actionText="Yes"
-    @submitForm="deleteUser"
+    @submitForm="deleteRank"
     @cancel="$emit('cancel')"
   >
   </modal-template>
@@ -17,10 +17,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ModalTemplate from '@/components/admin/template/ModalTemplate.vue'
-import userService from '@/services/UserService'
+import rankService from '@/services/RankService'
 import { useToast } from 'vue-toastification'
 import type { PropType } from 'vue'
-import type { User } from '@/types/User'
+import type { Rank } from '@/types/Rank'
 
 const toast = useToast()
 
@@ -29,8 +29,8 @@ export default defineComponent({
     ModalTemplate
   },
   props: {
-    user: {
-      type: Object as PropType<User>,
+    rank: {
+      type: Object as PropType<Rank>,
       default: null
     },
     isOpen: {
@@ -40,14 +40,14 @@ export default defineComponent({
   },
   computed: {
     titleText() {
-      return this.user ? `Are you sure you want to delete user [${this.user.username}]` : 'Error'
+      return this.rank ? `Are you sure you want to delete rank [${this.rank.title}]` : 'Error'
     }
   },
   methods: {
-    async deleteUser() {
+    async deleteRank() {
       try {
-        await userService.deleteUser(this.user.id.toString())
-        toast.success('User deleted successfully')
+        await rankService.deleteRank(this.rank.id.toString())
+        toast.success('Rank deleted successfully')
         this.$emit('afterDelete')
       } catch (error: any) {
         toast.error(error.message)
@@ -56,4 +56,3 @@ export default defineComponent({
   }
 })
 </script>
-@/services/UserService

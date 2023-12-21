@@ -61,6 +61,22 @@ export class UserService {
   }
 
   /**
+   * Sends a request to get a user by username.
+   * @param username The username of the user.
+   * @returns The user data with specified username and message.
+   */
+  async getUserByUsername(username: string): Promise<AxiosResponse<User>> {
+    try {
+      const response: AxiosResponse = await axios.get(`${API_URL}/username/${username}`, {
+        headers: authService.authHeader()
+      })
+      return response.data
+    } catch (error: any) {
+      throw new Error(error.response.data.message || error.response.data || error.statusMessage)
+    }
+  }
+
+  /**
    * Sends a request to save a new user (admin permisions only).
    * @param userData The user data to be saved.
    * @returns The created user object and message.
@@ -72,7 +88,6 @@ export class UserService {
       })
       return response.data
     } catch (error: any) {
-      console.log(error)
       throw new Error(error.response.data.message || error.response.data || error.statusMessage)
     }
   }
@@ -90,7 +105,6 @@ export class UserService {
       })
       return response.data
     } catch (error: any) {
-      console.log(error)
       throw new Error(error.response.data.message || error.response.data || error.statusMessage)
     }
   }

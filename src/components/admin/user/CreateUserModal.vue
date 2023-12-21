@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ModalTemplate from '../ModalTemplate.vue'
+import ModalTemplate from '@/components/admin/template/ModalTemplate.vue'
 import userService from '@/services/UserService'
 import { useToast } from 'vue-toastification'
 
@@ -55,7 +55,6 @@ export default defineComponent({
   },
   methods: {
     async createUser(values: any) {
-      console.log(values)
       try {
         await userService.createUser(values)
         toast.success('User created successfully')

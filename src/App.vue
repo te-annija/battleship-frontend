@@ -41,7 +41,7 @@ export default defineComponent({
 }
 .background {
   z-index: -5;
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   width: 100%;

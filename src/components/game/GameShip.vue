@@ -7,7 +7,7 @@
   <div
     class="ship"
     :class="{
-      'ship-vertical': ship.position.isVertical,
+      'ship-vertical': isVertical,
       'ship-placed': ship.isOnBoard,
       'ship-sunk': ship.hits === ship.size,
       'ship-selected': isSelected
@@ -20,8 +20,8 @@
     <div
       class="ship__cell"
       :class="{
-        'ship__cell-vertical': ship.position.isVertical,
-        'ship__cell-horizontal': !ship.position.isVertical
+        'ship__cell-vertical': isVertical,
+        'ship__cell-horizontal': !isVertical
       }"
       v-bind:key="index"
       v-for="index in ship.size"
@@ -29,7 +29,7 @@
     <div
       class="ship-rotate"
       v-if="isEditMode && !ship.isOnBoard && ship.size > 1"
-      @click="emitToggleRotation"
+      @click="handleToggleRotation"
     />
   </div>
 </template>
@@ -54,20 +54,42 @@ export default defineComponent({
   },
   data() {
     return {
-      isSelected: false as Boolean
+      isSelected: false as Boolean,
+      isVertical: this.ship.position.isVertical as Boolean
+    }
+  },
+  mounted() {
+    this.$emit('toggleRotation', this.ship.id, this.isVertical)
+  },
+  watch: {
+    ship: {
+      handler(ship, oldShip) {
+        if (ship.id !== oldShip.id) {
+          this.isVertical = ship.position.isVertical
+        }
+      },
+      deep: true
     }
   },
   methods: {
-    emitSelectShip() {
-      $bus.emit('select-ship', this.ship)
+    emitSelectShip(event: DragEvent) {
+      if (event && event.dataTransfer) {
+        event.dataTransfer.setData('shipId', this.ship.id)
+      }
+
+      $bus.emit('select-ship', {
+        ...this.ship,
+        position: { ...this.ship.position, isVertical: this.isVertical }
+      })
       this.isSelected = true
     },
     emitUnselectShip() {
       $bus.emit('select-ship', null)
       this.isSelected = false
     },
-    emitToggleRotation() {
-      $bus.emit('toggle-ship-rotation', this.ship)
+    handleToggleRotation() {
+      this.isVertical = !this.isVertical
+      this.$emit('toggleRotation', this.ship.id, this.isVertical)
     }
   }
 })
@@ -91,6 +113,8 @@ export default defineComponent({
 
   &-selected {
     background: transparentize(#b4b4ff, 0.4);
+    transition: 0.1s;
+    transform: translateX(-9999px);
   }
 
   &-placed {

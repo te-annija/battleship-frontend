@@ -29,11 +29,19 @@ export class WebSocketService {
   }
 
   /**
+   * Determines if Websocket connection is opened.
+   * @returns True if websocket is opened successfully.
+   */
+  getIsOpen() {
+    return this.socket.readyState === WebSocket.OPEN
+  }
+
+  /**
    * Sends a message to Websocket connection.
    * @param message The text that needs to be sent.
    */
   sendMessage(message: string) {
-    if (this.socket.readyState === WebSocket.OPEN) {
+    if (this.getIsOpen()) {
       this.socket.send(message)
     } else {
       console.error('WebSocket is not open.')

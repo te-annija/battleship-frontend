@@ -17,6 +17,19 @@ export const useUserStore = defineStore('user', {
   }),
   actions: {
     /**
+     * Handle request to update user data stored in state.
+     */
+    async fetchUserData() {
+      try {
+        if (this.user) {
+          const data: any = await userService.getUserById(this.user.id.toString())
+          this.user = data.user
+        }
+      } catch (error: any) {
+        toast.error(error.message)
+      }
+    },
+    /**
      * Handle request to login user and save data in user global state.
      * @param username The username of the user.
      * @param password The password of the user.
@@ -28,7 +41,6 @@ export const useUserStore = defineStore('user', {
         toast.success(data.message)
         this.$router.push({ path: '/' })
       } catch (error: any) {
-        console.log(error)
         toast.error(error.message)
       }
     },

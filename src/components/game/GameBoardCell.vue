@@ -7,7 +7,8 @@
   <div
     class="gameboard__cell"
     :class="{
-      'gameboard__cell-ship': cell && cell.state === 'ship' && !cell.shipPlacementState,
+      'gameboard__cell-ship':
+        (cell && cell.ship) || (cell && cell.state === 'ship' && !cell.shipPlacementState),
       'gameboard__cell-adjacent':
         !isGameMode && cell && cell.state === 'adjacent' && !cell.shipPlacementState,
       'gameboard__cell-hit': cell && cell.state === 'hit',
@@ -16,7 +17,7 @@
       'gameboard__cell-invalid': !isGameMode && cell && cell.shipPlacementState == 'invalid',
       'gameboard__cell-attack':
         isGameMode && isPlayerTurn && !isPlayerGameBoard && cell && cell.state === 'empty',
-      'gameboard__cell-noborder': (cell && cell.ship) || (cell && cell.state === 'hit')
+      'gameboard__cell-ghost': cell && cell.state === 'ghost-empty'
     }"
   >
     <game-ship
@@ -38,7 +39,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import GameShip from './GameShip.vue'
-import { type BoardCell } from '@/types/GameTypes'
+import { type GameboardCell } from '@/types/GameTypes'
 
 export default defineComponent({
   components: {
@@ -59,7 +60,7 @@ export default defineComponent({
       required: true
     },
     cell: {
-      type: Object as PropType<BoardCell>,
+      type: Object as PropType<GameboardCell>,
       default: null
     },
     isGameMode: {
@@ -95,15 +96,12 @@ export default defineComponent({
   height: 30px;
   border: 1px solid $cl-brdr-game;
 
-  &-noborder {
-    border: none;
-  }
-
   & + & {
     border-left: none;
   }
 
   &-ship {
+    border: none;
     background: transparentize(#b4b4ff, 0.6);
   }
 
@@ -120,6 +118,7 @@ export default defineComponent({
   }
 
   &-hit {
+    border: none;
     background-color: transparentize(#eca7a2, 0.6);
     &:before {
       content: 'X';
@@ -127,6 +126,10 @@ export default defineComponent({
       font-variant: small-caps;
       color: $cl-red;
     }
+  }
+
+  &-ghost {
+    border: 1px dashed $cl-primary !important;
   }
 
   &-miss {

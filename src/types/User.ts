@@ -3,6 +3,9 @@
  * DESCRIPTION: Define used type for handling user information.
  * AUTHOR: Annija Karitone
  */
+
+import type { Rank } from './Rank'
+
 /** Reprensents the registered user general information. */
 export type User = {
   /** Unique identifier of the user. */
@@ -16,6 +19,12 @@ export type User = {
 
   /** True if user is a administrator, false otherwise. Do not use for auth. */
   isAdmin: boolean
+
+  /** Total point count of the user. */
+  points: number
+
+  /** Rank of the user. */
+  rank: Rank
 
   createdAt: string
   updatedAt: string

@@ -1,5 +1,5 @@
 <!-- 
-  FILENAME: AdminSidebar.vue
+  FILENAME: AdminHeader.vue
   DESCRIPTION: The component renders top header on the admin page.
   AUTHOR: Annija Karitone 
 -->

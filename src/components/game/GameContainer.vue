@@ -5,135 +5,133 @@
 -->
 <template>
   <div class="game container">
-    <div v-if="!player" class="game__container card box-shadow">
+    <div v-if="!player || loadingFriendGame" class="game__container card box-shadow">
       <div class="game__loading">
         <div><span class="spinner" /> Loading ...</div>
       </div>
     </div>
-    <div v-if="player" class="game__container card box-shadow">
-      <ship-container
-        class="game__shipcontainer"
-        v-if="player.gameboard && isEditMode"
-        :ships="player.gameboard.ships"
-        :is-game-mode="isGameMode"
-        :is-edit-mode="isEditMode"
-        @dragover.prevent
-        @drop="handleRemoveShip"
+    <div v-if="player && !loadingFriendGame" class="card box-shadow game__container-wrap">
+      <game-instructions
+        :status="status"
+        :friend-game-session-id="friendGameSessionID"
+        :is-opponent-connected="opponent ? true : false"
+        :is-player-turn="isPlayerTurn"
       />
+      <div class="game__container">
+        <ship-container
+          class="game__shipcontainer"
+          v-if="
+            player.gameboard &&
+            status !== gameStatusType.Game &&
+            status !== gameStatusType.GameEnded
+          "
+          :ships="player.gameboard.ships"
+          :is-game-mode="false"
+          :is-edit-mode="
+            status === gameStatusType.WaitingActive || status === gameStatusType.Prepare
+          "
+          @dragover.prevent
+          @drop="handleRemoveShip"
+        />
 
-      <div class="game__container-wrap">
-        <div class="game__gameboard">
-          <game-board
-            v-if="player.gameboard"
-            :gameboard="player.gameboard"
-            :is-game-mode="isGameMode"
-            :is-edit-mode="isEditMode"
-            :is-player-turn="isPlayerTurn"
-            :is-player-game-board="true"
-            @dropShip="handleDropShip"
-            @dragOver="handleDragOverCell"
-            @dragLeave="handleDragLeaveCell"
-          />
-          <div class="game__actions-edit">
-            <button v-if="isEditMode" @click="sendSimpleAction('randomize-ships')">
-              Randomize
-            </button>
-            <button v-if="isEditMode" @click="sendSimpleAction('reset-ships')">Reset</button>
-            <button
-              class="game__actions-leave"
-              v-if="(isGameMode || isWaitingMode) && !isGameOverMode"
-              @click="handleLeaveGame()"
-            >
-              Leave Game
-            </button>
-          </div>
-        </div>
-        <div v-if="isGameMode" class="game__gameboard">
-          <game-board
-            v-if="isGameMode && player.attackGameboard"
-            :gameboard="player.attackGameboard"
-            :is-game-mode="isGameMode"
-            :is-edit-mode="false"
-            :is-waiting-mode="isWaitingMode"
-            :is-player-turn="isPlayerTurn && isOpponentConnected"
-            :is-player-game-board="false"
-            @attackCell="handleAttackCell"
-          />
-        </div>
-        <div v-if="!isGameMode && !isWaitingMode" class="game__actions-create">
-          <button :disabled="!isShipsPlaced" @click="startGame('random')">Play Online</button>
-          <button :disabled="!isShipsPlaced" @click="startGame('friend')">Play With Friend</button>
-          <button :disabled="!isShipsPlaced" @click="startGame('computer')">
-            Play With Computer
-          </button>
-        </div>
+        <div class="game__container-main">
+          <div class="game__gameboard">
+            <game-board
+              v-if="player.gameboard"
+              :gameboard="player.gameboard"
+              :is-game-mode="status === gameStatusType.Game"
+              :is-edit-mode="
+                status === gameStatusType.Prepare || status === gameStatusType.WaitingActive
+              "
+              :is-player-turn="isPlayerTurn"
+              :is-player-game-board="true"
+              @dropShip="handleDropShip"
+            />
 
-        <div v-if="!isGameMode && isWaitingMode" class="game__waitingroom">
-          <div v-if="player.gameSessionId || friendGameSessionID">
-            Game Session ID: {{ player.gameSessionId || friendGameSessionID }}
-          </div>
-          <div>
-            Players:
-            <div>
-              <p>
-                You ({{ player.name }})
-                <status-widget
-                  v-if="isOpponentConnected"
-                  :is-status-green="player.isReady"
-                  :is-status-red="!player.isReady"
-                  status-green-text="Player Ready"
-                  status-red-text="Player Not Ready"
-                />
-              </p>
-            </div>
-            <div>
-              <div v-if="!isOpponentConnected">
-                <p>Opponent: <span class="spinner" /> Waiting</p>
-              </div>
-              <div v-if="isOpponentConnected && opponent">
-                <p>
-                  Opponent: {{ opponent.name }}
-                  <status-widget
-                    :is-status-green="opponent.isReady"
-                    :is-status-red="!opponent.isReady"
-                    status-green-text="Player Ready"
-                    status-red-text="Player Not Ready"
-                  />
-                </p>
-              </div>
-              <div v-if="friendGameSessionID && !isOpponentConnected">
-                <div>Share this link with your friend:</div>
-                <div class="game__waitingroom-link">
-                  <input v-model="generateFriendLink" readonly />
-                  <img
-                    v-if="!isLinkCopied"
-                    class="copy-icon"
-                    alt="Copy"
-                    src="@/assets/icons/copy.svg"
-                    height="20"
-                    v-clipboard:copy="generateFriendLink"
-                    v-clipboard:success="onSuccessCopy"
-                  />
-                  <img v-else alt="Copied" src="@/assets/icons/copied.svg" height="20" />
-                </div>
-              </div>
-              <div v-if="(friendGameSessionID || player.gameSessionId) && isOpponentConnected">
-                <button :disabled="!isShipsPlaced" @click="toggleReady()">
-                  {{ player.isReady ? 'Not Ready' : 'Ready' }}
-                </button>
-              </div>
+            <div class="game__actions-edit">
+              <button
+                v-if="status === gameStatusType.Prepare || status === gameStatusType.WaitingActive"
+                @click="sendSimpleAction('randomize-ships')"
+              >
+                Randomize
+              </button>
+              <button
+                v-if="status === gameStatusType.Prepare || status === gameStatusType.WaitingActive"
+                @click="sendSimpleAction('reset-ships')"
+              >
+                Reset
+              </button>
+              <button
+                class="game__actions-leave"
+                v-if="status !== gameStatusType.Prepare && status !== gameStatusType.GameEnded"
+                @click="handleLeaveGame()"
+              >
+                Leave Game
+              </button>
             </div>
           </div>
+          <div
+            v-if="status === gameStatusType.Game || status == gameStatusType.GameEnded"
+            class="game__gameboard"
+          >
+            <game-board
+              v-if="player.attackGameboard"
+              :gameboard="player.attackGameboard"
+              :is-game-mode="status === gameStatusType.Game"
+              :is-edit-mode="false"
+              :is-waiting-mode="false"
+              :is-player-turn="isPlayerTurn"
+              :is-player-game-board="false"
+              @attackCell="handleAttackCell"
+            />
+          </div>
+          <div v-if="status === gameStatusType.Prepare" class="game__actions-create">
+            <button :disabled="!isShipsPlaced" @click="startGame('random')">Play Online</button>
+            <button :disabled="!isShipsPlaced" @click="startGame('friend')">
+              Play With Friend
+            </button>
+            <button :disabled="!isShipsPlaced" @click="startGame('computer')">
+              Play With Computer
+            </button>
+          </div>
+
+          <game-waitingroom
+            v-if="status === gameStatusType.Waiting || status === gameStatusType.WaitingActive"
+            :player="player"
+            :opponent="opponent"
+            :friend-game-session-id="friendGameSessionID"
+            :player-user="user"
+            :opponent-user="opponentUser"
+            :show-ready="isShipsPlaced"
+            @toggleReady="toggleReady"
+          />
         </div>
       </div>
-      <div v-if="isGameOverMode || (isGameMode && !isOpponentConnected)" class="game__overlay">
+      <div v-if="status === gameStatusType.GameEnded" class="game__overlay">
         <div class="game__overlay-content">
-          <h2 v-if="isGameOverMode">{{ hasWon ? 'You won the game!' : 'You lost the game!' }}</h2>
-          <button v-if="isGameOverMode && isOpponentConnected" @click="handleRematch()">
+          <h2 v-if="status === gameStatusType.GameEnded && game">
+            {{ game.isWinner ? 'Victory!' : 'Defeat!' }}
+          </h2>
+          <p v-if="user && game && game.points > 0">{{ game.points }} points</p>
+          <p v-if="!user && game && game.isWinner && game.points > 0">
+            You would earn {{ game.points }} points if logged in
+          </p>
+          <p v-if="!user && game && game.isWinner && game.points > 0">Register here</p>
+          <button v-if="status === gameStatusType.GameEnded && opponent" @click="handleRematch()">
             Rematch
           </button>
           <div v-else>Oppontent left the game.</div>
           <button class="btn-red" @click="handleLeaveGame()">Leave Game</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="showLeaveConfirmation && status === gameStatusType.Game" class="game__overlay">
+      <div class="game__overlay-content">
+        <h3>Are you sure you want to leave the game?</h3>
+        <p>Be aware! This game will be counted as lost!</p>
+        <div class="confirmation-buttons">
+          <button @click="showLeaveConfirmation = false">Cancel</button>
+          <button @click="handleLeaveGame()" class="btn-red">Leave Game</button>
         </div>
       </div>
     </div>
@@ -145,11 +143,16 @@ import { defineComponent } from 'vue'
 import { WebSocketService } from '@/services/WebsocketService'
 import GameBoard from './GameBoard.vue'
 import ShipContainer from './ShipContainer.vue'
-import StatusWidget from '@/components/widgets/StatusWidget.vue'
+import GameWaitingroom from './GameWaitingroom.vue'
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
-import { type Player, type Ship } from '@/types/GameTypes'
+import { type Player, type Ship, GameStatus } from '@/types/GameTypes'
 import { $bus } from '@/utils/GlobalEmit'
 import { useToast, POSITION } from 'vue-toastification'
+import { mapActions, mapState } from 'pinia'
+import { useUserStore } from '@/stores/user'
+import type { User } from '@/types/User'
+import userService from '@/services/UserService'
+import GameInstructions from './GameInstructions.vue'
 
 export default defineComponent({
   data() {
@@ -157,37 +160,35 @@ export default defineComponent({
       socketService: null as WebSocketService | null,
       player: null as Player | null,
       opponent: null as Player | null,
-      selectedShip: null as Ship | null,
-      isGameMode: false as boolean,
-      isEditMode: true as boolean,
+      opponentUser: null as User | null,
+      status: GameStatus.Prepare as GameStatus,
+      gameStatusType: GameStatus,
       isPlayerTurn: true as boolean,
-      isWaitingMode: false as boolean,
-      isGameOverMode: false as boolean,
-      isRematchMode: false as boolean,
-      isOpponentConnected: false as boolean,
       friendGameSessionID: null as string | null,
-      isLinkCopied: false as boolean,
-      hasWon: false as boolean,
+      game: null as { isWinner: boolean; points: number } | null,
+      showLeaveConfirmation: false as boolean,
+      loadingFriendGame: false as boolean,
       toast: useToast()
     }
   },
   components: {
     GameBoard,
     ShipContainer,
-    StatusWidget
+    GameWaitingroom,
+    GameInstructions
   },
   mounted() {
     const params = new URL((document as any).location).searchParams
     if (params.get('id')) {
       this.friendGameSessionID = params.get('id')
+      this.loadingFriendGame = true
+      this.$router.push({})
     }
 
     setTimeout(() => {
       this.socketService = new WebSocketService()
     }, 1500)
-
     $bus.on('select-ship', this.handleSelectShip)
-    $bus.on('toggle-ship-rotation', this.handleToggleShipRotation)
     $bus.on('websocket-connected', this.handleWebsocketConnected)
     $bus.on('websocket-message', this.handleWebsocketMessage)
     $bus.on('websocket-disconnected', this.handleWebsocketDisconnected)
@@ -197,37 +198,26 @@ export default defineComponent({
       this.socketService.close()
     }
     $bus.off('select-ship', this.handleSelectShip)
-    $bus.off('toggle-ship-rotation', this.handleToggleShipRotation)
     $bus.off('websocket-connected', this.handleWebsocketConnected)
     $bus.off('websocket-message', this.handleWebsocketMessage)
     $bus.off('websocket-disconnected', this.handleWebsocketDisconnected)
   },
   computed: {
+    ...mapState(useUserStore, ['user']),
+    ...mapActions(useUserStore, ['fetchUserData']),
     isShipsPlaced() {
-      return (
-        this.player &&
+      return this.player &&
         this.player.gameboard &&
         this.player.gameboard.ships.every((ship) => ship.isOnBoard)
-      )
-    },
-    generateFriendLink(): string {
-      if (!this.friendGameSessionID) {
-        return ''
-      }
-      return `${window.location.host}${window.location.pathname}?id=${this.friendGameSessionID}`
+        ? true
+        : false
     }
   },
   methods: {
     handleConnectToWebsocket() {
       this.socketService = new WebSocketService()
     },
-    handleSelectShip(ship: Ship) {
-      this.selectedShip = ship
-    },
-    handleToggleShipRotation(ship: Ship) {
-      ship.position.isVertical = !ship.position.isVertical
-    },
-    handleWebsocketMessage(data: WebsocketMessage): void {
+    async handleWebsocketMessage(data: WebsocketMessage): Promise<void> {
       switch (data.type) {
         case 'player':
           if (data.data.player) {
@@ -235,28 +225,33 @@ export default defineComponent({
           }
           break
         case 'game-started':
-          this.isOpponentConnected = true
-          this.isGameMode = true
-          this.isEditMode = false
-          this.isWaitingMode = false
+          this.status = this.gameStatusType.Game
           break
         case 'game-created':
           if (data.data.id && data.data.type === 'friend') {
+            this.status = this.gameStatusType.WaitingActive
             this.friendGameSessionID = data.data.id
-            this.$router.push({
-              query: { id: data.data.id }
-            })
           }
           break
         case 'player-joined':
           if (!this.player) return
-          this.isWaitingMode = true && !this.isGameMode
-          this.isEditMode =
-            this.friendGameSessionID || this.isOpponentConnected ? true && !this.isGameMode : false
+          this.loadingFriendGame = false
+          if (this.status === this.gameStatusType.Game) break
+
+          if (this.friendGameSessionID || this.opponent) {
+            this.status = this.gameStatusType.WaitingActive
+          } else {
+            this.status = this.gameStatusType.Waiting
+          }
           break
         case 'opponent':
-          this.isOpponentConnected = true
           this.opponent = data.data
+          try {
+            const response: any = await userService.getUserByUsername(data.data.username)
+            this.opponentUser = response.user
+          } catch (error: any) {
+            /* empty */
+          }
           break
         case 'game-turn':
           if (data.data.isPlayerTurn) {
@@ -266,20 +261,24 @@ export default defineComponent({
           }
           break
         case 'opponent-disconnected':
-          this.isOpponentConnected = false
-          if (this.isEditMode) {
-            this.toast.error('Opponent disconnected from the game.', {
-              position: POSITION.BOTTOM_CENTER
-            })
-          }
+          this.toast.error('Opponent disconnected from the game.', {
+            position: POSITION.BOTTOM_CENTER
+          })
 
-          if (this.isGameOverMode || this.isRematchMode) {
+          this.opponent = null
+
+          if (this.status === this.gameStatusType.WaitingActive && !this.friendGameSessionID) {
             this.handleLeaveGame()
           }
 
           break
         case 'host-disconnected':
-          this.handleLeaveGame()
+          if (
+            this.status === this.gameStatusType.WaitingActive ||
+            this.status === this.gameStatusType.Waiting
+          ) {
+            this.handleLeaveGame()
+          }
           break
         case 'ready-status':
           if (this.opponent && data.data.status) {
@@ -287,116 +286,95 @@ export default defineComponent({
           }
           break
         case 'game-ended':
-          this.isGameOverMode = true
+          this.status = this.gameStatusType.GameEnded
           if (data.data) {
-            this.hasWon = data.data.hasWon
+            this.game = data.data
+          }
+
+          if (this.opponent) {
+            this.opponent.isReady = false
+          }
+
+          await this.fetchUserData
+
+          if (this.opponentUser) {
+            const response: any = await userService.getUserByUsername(this.opponentUser.username)
+            this.opponentUser = response.user
           }
           break
         case 'error':
           if (data.data.message) {
+            this.loadingFriendGame = false
             this.toast.error(data.data.message, { position: POSITION.BOTTOM_CENTER })
           }
-      }
-    },
-    sendMessage(message: string): void {
-      if (this.socketService) {
-        this.socketService.sendMessage(message)
       }
     },
     sendSimpleAction(type: string, data: any = null): void {
       if (this.socketService) {
         const message: string = this.socketService.formatMessage(type, data)
-        this.sendMessage(message)
+        this.socketService.sendMessage(message)
       }
     },
-    handleDropShip(rowIndex: number, colIndex: number) {
-      if (this.socketService && this.selectedShip) {
-        const message: string = this.socketService.formatMessage('place-ship', {
-          ship_id: this.selectedShip.id,
-          position: {
-            row: rowIndex,
-            col: colIndex,
-            isVertical: this.selectedShip.position.isVertical
+    handleSelectShip(ship: Ship) {
+      if (!this.player || !this.player.gameboard) return
+      if (!ship || !ship.isOnBoard) return
+      const size = this.player.gameboard.size
+      let endRow = ship.position.isVertical ? ship.position.row + ship.size : ship.position.row + 1
+      let endCol = ship.position.isVertical ? ship.position.col + 1 : ship.position.col + ship.size
+
+      for (let i = ship.position.row - 1; i <= endRow; i++) {
+        for (let j = ship.position.col - 1; j <= endCol; j++) {
+          if (i >= 0 && i < size && j >= 0 && j <= size) {
+            const cell = this.player.gameboard.grid[i][j]
+
+            if (cell && cell.adjacentCount && cell.adjacentCount <= 1) {
+              cell.state = 'empty'
+            } else if (cell && cell.ship) {
+              cell.state = 'ghost-empty'
+            }
           }
-        })
-        this.sendMessage(message)
-        this.dragShip(rowIndex, colIndex, false)
-        this.selectedShip = null
-      }
-    },
-    dragShip(row: number, col: number, isDragOver: boolean) {
-      const ship = this.selectedShip
-
-      if (!ship || !this.player || !this.player.gameboard) return
-
-      let cells = []
-      let isValid = true
-
-      for (let i = 0; i < ship.size; i++) {
-        const rowIndex = ship.position.isVertical ? row + i : row
-        const colIndex = ship.position.isVertical ? col : col + i
-
-        if (!this.isValidCoordinates(rowIndex, colIndex)) {
-          isValid = false
-          break
         }
-        const cell = this.player.gameboard.grid[rowIndex][colIndex]
-        cells.push(cell)
-        isValid = isValid && cell.state !== 'ship' && cell.state !== 'adjacent'
-      }
-
-      const shipPlacementState = isDragOver ? (isValid ? 'valid' : 'invalid') : undefined
-      for (let cell of cells) {
-        cell.shipPlacementState = shipPlacementState
       }
     },
-    handleDragOverCell(rowIndex: number, colIndex: number) {
-      this.dragShip(rowIndex, colIndex, true)
+    handleDropShip(ship: Ship, rowIndex: number, colIndex: number) {
+      this.sendSimpleAction('place-ship', {
+        ship_id: ship.id,
+        position: {
+          row: rowIndex,
+          col: colIndex,
+          isVertical: ship.position.isVertical
+        }
+      })
     },
-    handleDragLeaveCell(rowIndex: number, colIndex: number) {
-      this.dragShip(rowIndex, colIndex, false)
-    },
-    handleRemoveShip() {
-      if (this.socketService && this.selectedShip) {
-        const message: string = this.socketService.formatMessage('remove-ship', {
-          ship_id: this.selectedShip.id
-        })
-        this.sendMessage(message)
-        this.selectedShip = null
+    handleRemoveShip(event: DragEvent) {
+      if (event && event.dataTransfer) {
+        this.sendSimpleAction('remove-ship', { ship_id: event.dataTransfer.getData('shipId') })
       }
-    },
-    isValidCoordinates(rowIndex: number, colIndex: number) {
-      if (!this.player || !this.player.gameboard) return false
-      const boardSize: number = this.player.gameboard.size
-      return rowIndex < boardSize && colIndex < boardSize && rowIndex >= 0 && colIndex >= 0
-    },
-    handleLeaveGame() {
-      this.sendSimpleAction('leave-game')
-      this.isGameMode = false
-      this.isEditMode = true
-      this.isWaitingMode = false
-      this.isGameOverMode = false
-      this.isOpponentConnected = false
-      this.isRematchMode = false
-      this.opponent = null
-      this.friendGameSessionID = null
-      this.$router.push({})
     },
     handleAttackCell(rowIndex: number, colIndex: number) {
-      if (this.socketService) {
-        const message: string = this.socketService.formatMessage('attack-cell', {
-          row: rowIndex,
-          col: colIndex
-        })
-        this.sendMessage(message)
-        this.selectedShip = null
+      this.sendSimpleAction('attack-cell', { row: rowIndex, col: colIndex })
+    },
+    handleLeaveGame() {
+      if (this.status === this.gameStatusType.Game && !this.showLeaveConfirmation) {
+        this.showLeaveConfirmation = true
+      } else {
+        this.sendSimpleAction('leave-game')
+        this.status = this.gameStatusType.Prepare
+        this.showLeaveConfirmation = false
+        this.opponent = null
+        this.friendGameSessionID = null
+        this.$router.push({})
       }
     },
     toggleReady() {
       if (this.player) {
         const isReady = this.player.isReady
         this.player.isReady = !isReady
-        this.isEditMode = isReady
+        if (this.player.isReady) {
+          this.status = this.gameStatusType.Waiting
+        } else {
+          this.status = this.gameStatusType.WaitingActive
+        }
 
         this.sendSimpleAction('ready', { status: !isReady })
       }
@@ -405,7 +383,6 @@ export default defineComponent({
       switch (gameMode) {
         case 'random':
           this.sendSimpleAction('join-game-random', { type: 'random' })
-          this.isWaitingMode = true
           break
         case 'computer':
           this.sendSimpleAction('create-game', { type: 'computer' })
@@ -417,30 +394,23 @@ export default defineComponent({
     },
     handleRematch() {
       this.sendSimpleAction('rematch-game')
-      this.isGameMode = false
-      this.isEditMode = true
-      this.isWaitingMode = true
-      this.isGameOverMode = false
-      this.isRematchMode = true
+      this.status = this.gameStatusType.WaitingActive
     },
     handleWebsocketConnected() {
-      if (this.socketService && this.friendGameSessionID) {
-        const message: string = this.socketService.formatMessage('join-game-friend', {
-          id: this.friendGameSessionID
-        })
-        this.sendMessage(message)
+      if (this.friendGameSessionID) {
+        setTimeout(() => {
+          this.sendSimpleAction('join-game-friend', { id: this.friendGameSessionID })
+        }, 1000)
       }
     },
     handleWebsocketDisconnected() {
       this.player = null
+      this.socketService = null
+
       setTimeout(() => {
-        this.socketService = new WebSocketService()
-      }, 1500)
-    },
-    onSuccessCopy() {
-      this.isLinkCopied = true
-      setTimeout(() => {
-        this.isLinkCopied = false
+        if (!this.socketService || !this.socketService.getIsOpen()) {
+          this.socketService = new WebSocketService()
+        }
       }, 1500)
     }
   }
@@ -456,9 +426,14 @@ export default defineComponent({
     min-height: 520px;
     display: flex;
     gap: 20px;
+    padding-top: 20px;
     align-items: start;
 
     &-wrap {
+      position: relative;
+    }
+
+    &-main {
       display: flex;
       width: 100%;
       justify-content: space-around;
@@ -487,65 +462,26 @@ export default defineComponent({
   }
 
   &__overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999; /* Ensure the overlay is above other elements */
+    z-index: 999;
 
     &-content {
+      min-width: 200px;
       text-align: center;
       display: flex;
       flex-direction: column;
       gap: 10px;
       padding: 20px;
-      background-color: $cl-bg-card; /* Adjust opacity as needed */
+      background-color: $cl-bg-card;
       border-radius: 10px;
-    }
-  }
-
-  &__waitingroom {
-    margin-top: 30px;
-    margin-left: 30px;
-    padding: 10px;
-    border: solid 1px $cl-brdr-game;
-    border-radius: 5px;
-
-    max-width: 300px;
-    width: 100%;
-
-    &-link {
-      position: relative;
-      height: 30px;
-      width: 100%;
-
-      input {
-        width: 100%;
-        height: 100%;
-        padding: 5px;
-        background: $cl-bg-card;
-        font-size: 16px;
-        border: none;
-        color: $cl-text;
-        border-radius: 5px;
-
-        &:focus {
-          outline: none;
-          border: none;
-        }
-      }
-
-      img {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        cursor: pointer;
-      }
     }
   }
 
@@ -568,7 +504,7 @@ export default defineComponent({
     &-leave {
       font-size: 16px;
       position: absolute;
-      top: 10px;
+      top: -5px;
       right: 10px;
       border: solid 1px $cl-red;
       color: $cl-red;
@@ -580,12 +516,6 @@ export default defineComponent({
         box-shadow: 0 0 0 1px $cl-red;
       }
     }
-  }
-}
-
-html[data-theme='light'] {
-  .copy-icon {
-    filter: invert(100%);
   }
 }
 </style>

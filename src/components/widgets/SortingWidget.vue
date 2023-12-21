@@ -7,8 +7,8 @@
   <span class="sorting">
     <img
       v-if="isActive"
-      class="sorting-arrow"
-      :class="{ arrow__desc: !isAscending }"
+      class="sorting__arrow"
+      :class="{ 'sorting__arrow-desc': !isAscending }"
       alt="▲"
       src="@/assets/icons/sort-asc.svg"
       height="8"
@@ -37,14 +37,15 @@ export default defineComponent({
   cursor: pointer;
   float: right;
 
-  &-arrow {
+  &__arrow {
     transition: transform 0.5s cubic-bezier(0, 0.96, 0.9, 1.21);
 
-    &__desc {
+    &-desc {
       transform: rotate(180deg);
       transition: transform 0.5s cubic-bezier(0, 0.96, 0.9, 1.21);
     }
-    &:not(&__desc) {
+
+    &:not(&-desc) {
       transform: rotate(0deg);
     }
   }

@@ -4,50 +4,26 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="status">
-    <span
-      class="status-circle"
-      :class="{
-        'status-circle-green': isStatusGreen,
-        'status-circle-red': isStatusRed
-      }"
-    />
-    <span class="status-text">{{ statusText }}</span>
-  </div>
+  <div
+    class="status"
+    :class="{
+      'status-green': isStatusGreen,
+      'status-red': isStatusRed
+    }"
+  ></div>
 </template>
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 
 export default defineComponent({
   props: {
-    statusTextDefault: {
-      type: String as PropType<String>,
-      default: ''
-    },
     isStatusGreen: {
       type: Boolean as PropType<Boolean>,
       default: false
     },
-    statusGreenText: {
-      type: String as PropType<String>,
-      default: ''
-    },
     isStatusRed: {
       type: Boolean as PropType<Boolean>,
       required: false
-    },
-    statusRedText: {
-      type: String as PropType<String>,
-      default: ''
-    }
-  },
-  computed: {
-    statusText() {
-      return this.isStatusRed
-        ? this.statusRedText
-        : this.isStatusGreen
-        ? this.statusGreenText
-        : this.statusTextDefault
     }
   }
 })
@@ -55,21 +31,17 @@ export default defineComponent({
 <style lang="scss" scoped>
 .status {
   display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transition: background-color 0.5s ease;
 
-  &-circle {
-    display: inline-block;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    transition: background-color 0.5s ease;
+  &-green {
+    background-color: #4cd06d;
+  }
 
-    &-green {
-      background-color: #4cd06d;
-    }
-
-    &-red {
-      background-color: red;
-    }
+  &-red {
+    background-color: red;
   }
 
   &-text {

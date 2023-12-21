@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import ModalTemplate from '../ModalTemplate.vue'
+import ModalTemplate from '@/components/admin/template/ModalTemplate.vue'
 import userService from '@/services/UserService'
 import { useToast } from 'vue-toastification'
 import type { User } from '@/types/User'
@@ -73,7 +73,6 @@ export default defineComponent({
   },
   computed: {
     titleText() {
-      console.log(this.user)
       return this.user ? `Edit User [${this.user.username}]` : 'Edit User'
     }
   },

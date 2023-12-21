@@ -187,6 +187,13 @@ button {
   border-radius: 5px;
 }
 
+.card-admin {
+  padding: 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
 .link {
   text-decoration: underline;
   font-weight: bold;
@@ -198,6 +205,10 @@ button {
 
 .bold {
   font-weight: bold;
+}
+
+.opacity {
+  opacity: 0.5;
 }
 
 @keyframes spin {

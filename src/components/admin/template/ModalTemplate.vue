@@ -1,6 +1,6 @@
 <!-- 
   FILENAME: ModalTemplate.vue
-  DESCRIPTION: Template for admin panel form popups. User for create, edit, delete entity actions.
+  DESCRIPTION: Template for admin panel form popups.
   AUTHOR: Annija Karitone 
 -->
 <template>
@@ -19,19 +19,20 @@
 </template>
 
 <script lang="ts">
+import type { PropType } from 'vue'
 import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
     isOpen: {
-      type: Boolean,
+      type: Boolean as PropType<Boolean>,
       required: true
     },
     actionText: {
-      type: String,
+      type: String as PropType<String>,
       default: 'Save Changes'
     },
     titleText: {
-      type: String,
+      type: String as PropType<String>,
       default: ''
     }
   },
@@ -44,7 +45,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/_variables';
+@import '../../../assets/styles/_variables';
 /* Styles for Create User Modal */
 .modal {
   position: absolute;

@@ -38,6 +38,12 @@
           <span v-if="!isCollapsed">Users </span></router-link
         >
       </li>
+      <li>
+        <router-link to="/admin/ranks">
+          <img alt="dashboard" src="@/assets/icons/ranks.svg" width="20" />
+          <span v-if="!isCollapsed">Ranks </span></router-link
+        >
+      </li>
     </ul>
   </div>
 </template>
@@ -108,6 +114,7 @@ export default defineComponent({
     li {
       padding: 10px 20px;
       border-bottom: 1px solid $cl-bg-navbar-account;
+      border-top: 1px solid $cl-bg-navbar-account;
 
       a {
         display: inline-block;
