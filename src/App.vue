@@ -53,8 +53,8 @@ export default defineComponent({
 }
 .main {
   width: 100%;
-  height: calc(100% - 60px);
-  padding-top: 50px;
+  min-height: 100vh;
+  padding-top: 100px;
   background: $cl-bg-overlay;
 }
 

@@ -7,7 +7,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
 import GamePage from '@/pages/GamePage.vue'
-import TournamentPage from '@/pages/TournamentPage.vue'
+import LeaderboardPage from '@/pages/LeaderboardPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
 import AdminPage from '@/pages/AdminPage.vue'
@@ -15,6 +15,7 @@ import SettingsPage from '@/pages/SettingsPage.vue'
 import UserManagement from '@/components/admin/UserManagement.vue'
 import RankManagement from '@/components/admin/RankManagement.vue'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
+import ProfilePage from '@/pages/ProfilePage.vue'
 import { useUserStore } from '@/stores/user'
 import authService from '@/services/AuthService'
 import { useToast } from 'vue-toastification'
@@ -35,9 +36,12 @@ const router = createRouter({
       component: GamePage
     },
     {
-      path: '/tournaments',
-      name: 'tournaments',
-      component: TournamentPage
+      path: '/leaderboard',
+      name: 'leaderboard',
+      meta: {
+        requiresUser: true
+      },
+      component: LeaderboardPage
     },
     {
       path: '/login',
@@ -62,6 +66,14 @@ const router = createRouter({
         requiresUser: true
       },
       component: SettingsPage
+    },
+    {
+      path: '/user/:username',
+      name: 'profile',
+      meta: {
+        requiresUser: true
+      },
+      component: ProfilePage
     },
     {
       path: '/admin',

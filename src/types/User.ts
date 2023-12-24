@@ -26,6 +26,8 @@ export type User = {
   /** Rank of the user. */
   rank: Rank
 
+  statistics?: any
+
   createdAt: string
   updatedAt: string
   deletedAt: string

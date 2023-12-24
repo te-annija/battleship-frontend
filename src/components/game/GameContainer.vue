@@ -112,11 +112,13 @@
           <h2 v-if="status === gameStatusType.GameEnded && game">
             {{ game.isWinner ? 'Victory!' : 'Defeat!' }}
           </h2>
-          <p v-if="user && game && game.points > 0">{{ game.points }} points</p>
+          <p v-if="user && game">{{ game.points }} points</p>
           <p v-if="!user && game && game.isWinner && game.points > 0">
             You would earn {{ game.points }} points if logged in
           </p>
-          <p v-if="!user && game && game.isWinner && game.points > 0">Register here</p>
+          <router-link v-if="!user && game && game.isWinner && game.points > 0" to="/register"
+            >Register Here</router-link
+          >
           <button v-if="status === gameStatusType.GameEnded && opponent" @click="handleRematch()">
             Rematch
           </button>
@@ -153,6 +155,7 @@ import { useUserStore } from '@/stores/user'
 import type { User } from '@/types/User'
 import userService from '@/services/UserService'
 import GameInstructions from './GameInstructions.vue'
+import { RouterLink } from 'vue-router'
 
 export default defineComponent({
   data() {
@@ -175,7 +178,8 @@ export default defineComponent({
     GameBoard,
     ShipContainer,
     GameWaitingroom,
-    GameInstructions
+    GameInstructions,
+    RouterLink
   },
   mounted() {
     const params = new URL((document as any).location).searchParams
@@ -482,6 +486,14 @@ export default defineComponent({
       padding: 20px;
       background-color: $cl-bg-card;
       border-radius: 10px;
+
+      a {
+        text-decoration: underline;
+
+        &:hover {
+          color: blue;
+        }
+      }
     }
   }
 

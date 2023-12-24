@@ -102,6 +102,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import '../assets/styles/_variables';
+
 .settings {
   max-width: 450px;
   margin: 0 auto;
@@ -109,7 +111,7 @@ export default defineComponent({
   &-section {
     margin-top: 10px;
     padding: 20px 0;
-    border-top: 1px solid black;
+    border-top: 1px solid $cl-text;
   }
 
   .form {

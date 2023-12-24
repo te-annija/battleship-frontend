@@ -11,13 +11,14 @@
       </router-link>
       <div class="navbar__top-links">
         <router-link to="/game">Battleship Game</router-link>
-        <router-link to="/tournaments">Tournaments</router-link>
+        <router-link v-if="user" to="/leaderboard">Leaderboard</router-link>
       </div>
 
       <div class="navbar__top-right">
         <theme-widget />
         <account-widget v-if="user" :user="user">
           <div v-if="user.isAdmin"><router-link to="/admin">Admin Panel</router-link></div>
+          <div><router-link :to="`/user/${user.username}`">Profile</router-link></div>
           <div><router-link to="/settings">Settings</router-link></div>
         </account-widget>
         <div v-else>

@@ -25,12 +25,15 @@ export class UserService {
     filters?: string,
     sortBy: string = 'id',
     sortOrder: string = 'asc',
-    paranoid: boolean = true
+    paranoid: boolean = true,
+    limit: number = 0
   ): Promise<User[]> {
     const sortingParams = sortBy ? `sortBy=${sortBy}&sortOrder=${sortOrder}` : ''
     const filterParams = `filterBy=${filters}`
     const paranoidParams = `paranoid=${paranoid}`
-    const queryParams = `${paranoidParams}&${sortingParams}${
+    const limitParams = `limit=${limit}`
+
+    const queryParams = `${limitParams}&${paranoidParams}&${sortingParams}${
       sortingParams ? '&' : ''
     }${filterParams}`
 
@@ -71,6 +74,22 @@ export class UserService {
         headers: authService.authHeader()
       })
       return response.data
+    } catch (error: any) {
+      throw new Error(error.response.data.message || error.response.data || error.statusMessage)
+    }
+  }
+
+  /**
+   * Sends a request to get a user by username.
+   * @param username The username of the user.
+   * @returns The user data with specified username and message.
+   */
+  async getUserStatistics(userId: string): Promise<AxiosResponse<User>> {
+    try {
+      const response: AxiosResponse = await axios.get(`${API_URL}/statistics/${userId}`, {
+        headers: authService.authHeader()
+      })
+      return response.data.statistics
     } catch (error: any) {
       throw new Error(error.response.data.message || error.response.data || error.statusMessage)
     }
