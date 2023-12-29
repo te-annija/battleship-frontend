@@ -20,7 +20,21 @@
         :opponent="opponentUser"
         :user-player="player"
         :opponent-player="opponent"
-      />
+      >
+        <span
+          v-if="status === gameStatusType.Game && isPlayerTurn && timer <= 15"
+          class="game__warning"
+        >
+          Make a move in {{ timer }}</span
+        >
+      </game-instructions>
+      <div v-if="status === gameStatusType.Game" class="game__bar-wrapper">
+        <div
+          class="game__bar"
+          :class="{ opacity: !isPlayerTurn, 'game__bar-reset': isBarReseting }"
+          ref="bar"
+        />
+      </div>
       <div class="game__container">
         <ship-container
           class="game__shipcontainer"
@@ -111,8 +125,13 @@
           />
         </div>
       </div>
-      <div v-if="status === gameStatusType.GameEnded" class="game__overlay">
-        <div class="game__overlay-content">
+      <div
+        v-if="
+          status === gameStatusType.GameEnded || (timer === 0 && status === gameStatusType.Game)
+        "
+        class="game__overlay"
+      >
+        <div v-if="status === gameStatusType.GameEnded" class="game__overlay-content">
           <h2 v-if="status === gameStatusType.GameEnded && game">
             {{ game.isWinner ? 'Victory!' : 'Defeat!' }}
           </h2>
@@ -128,6 +147,10 @@
           </button>
           <div v-else>Oppontent left the game.</div>
           <button class="btn-red" @click="handleLeaveGame()">Leave Game</button>
+        </div>
+        <div v-else-if="timer === 0" class="game__overlay-content">
+          <p>Attack time ended</p>
+          <p><span class="spinner" /> Waiting results...</p>
         </div>
       </div>
     </div>
@@ -160,6 +183,7 @@ import type { User } from '@/types/User'
 import userService from '@/services/UserService'
 import GameInstructions from './GameInstructions.vue'
 import { RouterLink } from 'vue-router'
+const TIMER_DURATION_SECONDS = 90
 
 export default defineComponent({
   data() {
@@ -175,6 +199,9 @@ export default defineComponent({
       game: null as { isWinner: boolean; points: number } | null,
       showLeaveConfirmation: false as boolean,
       loadingFriendGame: false as boolean,
+      timer: TIMER_DURATION_SECONDS as number,
+      timerInterval: null as any,
+      isBarReseting: false as boolean,
       toast: useToast()
     }
   },
@@ -293,6 +320,20 @@ export default defineComponent({
             this.opponent.isReady = data.data.status
           }
           break
+        case 'timer':
+          if (data.data.timer) {
+            this.timer = data.data.timer
+            this.stopTimer()
+            this.updateCountdownBar(true)
+            this.startTimer()
+          }
+          break
+        case 'timer-ended':
+          if (data.data.timer) {
+            this.stopTimer()
+            this.updateCountdownBar(true)
+          }
+          break
         case 'game-ended':
           this.status = this.gameStatusType.GameEnded
           if (data.data) {
@@ -361,6 +402,8 @@ export default defineComponent({
     },
     handleAttackCell(rowIndex: number, colIndex: number) {
       this.sendSimpleAction('attack-cell', { row: rowIndex, col: colIndex })
+      this.timer = TIMER_DURATION_SECONDS
+      this.updateCountdownBar(true)
     },
     handleLeaveGame() {
       if (this.status === this.gameStatusType.Game && !this.showLeaveConfirmation) {
@@ -420,6 +463,27 @@ export default defineComponent({
           this.socketService = new WebSocketService()
         }
       }, 1500)
+    },
+    startTimer() {
+      this.timerInterval = setInterval(() => {
+        if (this.timer <= 0) {
+          this.stopTimer()
+        } else {
+          this.timer--
+          this.updateCountdownBar()
+        }
+      }, 1000)
+    },
+    stopTimer() {
+      clearInterval(this.timerInterval)
+    },
+    updateCountdownBar(isReseting: boolean = false) {
+      this.isBarReseting = isReseting
+      const percentage = (this.timer / TIMER_DURATION_SECONDS) * 100
+      const bar: any = this.$refs.bar
+      if (bar) {
+        bar.style.width = `${percentage}%`
+      }
     }
   }
 })
@@ -531,6 +595,32 @@ export default defineComponent({
         border: solid 1px $cl-red;
         box-shadow: 0 0 0 1px $cl-red;
       }
+    }
+  }
+
+  &__warning {
+    color: $cl-red;
+    font-weight: bold;
+  }
+
+  &__bar {
+    height: 100%;
+    width: 100%;
+    background-color: $cl-primary;
+    border-radius: 5px;
+    transition: width 1s linear;
+
+    &-wrapper {
+      width: 100%;
+      height: 10px;
+      border: 1px solid $cl-brdr-game;
+      border-radius: 5px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    &-reset {
+      transition: none;
     }
   }
 }

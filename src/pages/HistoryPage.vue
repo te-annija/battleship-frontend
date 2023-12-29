@@ -115,7 +115,7 @@ export default defineComponent({
   methods: {
     getOpponentUsername(game: any): string {
       const user = this.user
-      
+
       if (!user) {
         return 'Unknown'
       }
@@ -124,7 +124,7 @@ export default defineComponent({
         return 'Friendly AI'
       }
 
-      const opponent = game.players.find((player: any) => { 
+      const opponent = game.players.find((player: any) => {
         player.username !== user.username
       })
 
