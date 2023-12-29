@@ -9,7 +9,7 @@
     class="gameboard"
     :class="{
       'gameboard-overlay':
-        (!isGameMode && !isEditMode) ||
+        (!isGameMode && !isEditMode && !isReplayMode) ||
         (isGameMode &&
           ((isPlayerTurn && isPlayerGameBoard) || (!isPlayerTurn && !isPlayerGameBoard)))
     }"
@@ -30,13 +30,14 @@
         :column="colIndex"
         :is-game-mode="isGameMode"
         :is-edit-mode="isEditMode"
+        :is-replay-mode="isReplayMode"
         :is-player-turn="isPlayerTurn"
         :is-player-game-board="isPlayerGameBoard"
         @click="cell.state == 'empty' && isPlayerTurn && $emit('attackCell', rowIndex, colIndex)"
         @dragover.prevent
         @dragover="handleDragOverCell(rowIndex, colIndex, cell.ship)"
         @dragleave="handleDragLeaveCell(rowIndex, colIndex, cell.ship)"
-        @drop="handleDrop(rowIndex, colIndex, cell.shipPlacementState == 'valid')"
+        @drop="handleDrop(rowIndex, colIndex)"
       />
     </div>
     <p class="opacity text-center">{{ isPlayerGameBoard ? 'Your' : 'Attack' }} grid</p>
@@ -60,15 +61,19 @@ export default defineComponent({
     },
     isGameMode: {
       type: Boolean as PropType<Boolean>,
-      required: true
+      default: false
     },
     isEditMode: {
       type: Boolean as PropType<Boolean>,
-      required: true
+      default: false
+    },
+    isReplayMode: {
+      type: Boolean as PropType<Boolean>,
+      default: false
     },
     isPlayerTurn: {
       type: Boolean as PropType<Boolean>,
-      required: true
+      default: false
     },
     isPlayerGameBoard: {
       type: Boolean as PropType<Boolean>,
@@ -87,7 +92,7 @@ export default defineComponent({
     handleSelectShip(ship: Ship) {
       this.selectedShip = ship
     },
-    handleDrop(rowIndex: number, colIndex: number, canDropShip: boolean) {
+    handleDrop(rowIndex: number, colIndex: number) {
       if (this.selectedShip) {
         this.$emit('dropShip', this.selectedShip, rowIndex, colIndex)
       }

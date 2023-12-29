@@ -81,7 +81,7 @@ export class UserService {
 
   /**
    * Sends a request to get a user by username.
-   * @param username The username of the user.
+   * @param userId The username of the user.
    * @returns The user data with specified username and message.
    */
   async getUserStatistics(userId: string): Promise<AxiosResponse<User>> {
@@ -90,6 +90,27 @@ export class UserService {
         headers: authService.authHeader()
       })
       return response.data.statistics
+    } catch (error: any) {
+      throw new Error(error.response.data.message || error.response.data || error.statusMessage)
+    }
+  }
+
+  /**
+   * Sends a request to get user games.
+   * @param userId The unique identifier of the user.
+   * @param filters Filters in format 'field:value' seperated with ','.
+   * @returns User gmaes that are filtered accordingly to parameters.
+   */
+  async getUserGames(userId: string, filters?: string): Promise<AxiosResponse<any>> {
+    try {
+      const filterParams = `filterBy=${filters}`
+      const response: AxiosResponse = await axios.get(
+        `${API_URL}/${userId}/games/?${filterParams}`,
+        {
+          headers: authService.authHeader()
+        }
+      )
+      return response.data.games
     } catch (error: any) {
       throw new Error(error.response.data.message || error.response.data || error.statusMessage)
     }

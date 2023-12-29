@@ -16,6 +16,7 @@ import UserManagement from '@/components/admin/UserManagement.vue'
 import RankManagement from '@/components/admin/RankManagement.vue'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
+import HistoryPage from '@/pages/HistoryPage.vue'
 import { useUserStore } from '@/stores/user'
 import authService from '@/services/AuthService'
 import { useToast } from 'vue-toastification'
@@ -74,6 +75,14 @@ const router = createRouter({
         requiresUser: true
       },
       component: ProfilePage
+    },
+    {
+      path: '/history',
+      name: 'history',
+      meta: {
+        requiresUser: true
+      },
+      component: HistoryPage
     },
     {
       path: '/admin',

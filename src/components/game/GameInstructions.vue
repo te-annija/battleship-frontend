@@ -41,10 +41,27 @@
         </p>
       </div>
       <div v-if="status === gameStatusType.Game">
-        <p v-show="isPlayerTurn">Your turn!</p>
-        <p v-show="isPlayerTurn">Select a cell on attack grid to launch a missile.</p>
-        <p v-show="!isPlayerTurn">Opponent's turn.</p>
-        <p v-show="!isPlayerTurn">Get ready for impact!</p>
+        <div class="instructions__users">
+          <user-data-widget
+            :rank="user ? user.rank : null"
+            :username="userPlayer ? userPlayer.username : 'Unknown'"
+            :is-user="user ? true : false"
+            text="You"
+          />
+          <user-data-widget
+            :rank="opponent ? opponent.rank : null"
+            :username="opponentPlayer ? opponentPlayer.username : 'Unknown'"
+            :is-user="opponent ? true : false"
+            text="Opponent"
+          />
+        </div>
+
+        <div>
+          <p v-show="isPlayerTurn">Your turn!</p>
+          <p v-show="isPlayerTurn">Select a cell on attack grid to launch a missile.</p>
+          <p v-show="!isPlayerTurn">Opponent's turn.</p>
+          <p v-show="!isPlayerTurn">Get ready for impact!</p>
+        </div>
       </div>
     </div>
   </div>
@@ -52,9 +69,14 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import { GameStatus } from '@/types/GameTypes'
+import { GameStatus, type Player } from '@/types/GameTypes'
+import UserDataWidget from '@/components/widgets/UserDataWidget.vue'
+import type { User } from '@/types/User'
 
 export default defineComponent({
+  components: {
+    UserDataWidget
+  },
   props: {
     status: {
       type: Number as PropType<GameStatus>,
@@ -71,6 +93,22 @@ export default defineComponent({
     isOpponentConnected: {
       type: Boolean as PropType<boolean>,
       default: false
+    },
+    user: {
+      type: Object as PropType<User | null>,
+      default: null
+    },
+    userPlayer: {
+      type: Object as PropType<Player | null>,
+      default: null
+    },
+    opponent: {
+      type: Object as PropType<User | null>,
+      default: null
+    },
+    opponentPlayer: {
+      type: Object as PropType<Player | null>,
+      default: null
     }
   },
   data() {
@@ -79,7 +117,6 @@ export default defineComponent({
       gameStatusType: GameStatus
     }
   },
-
   computed: {
     generateFriendLink(): string {
       if (!this.friendGameSessionId) {
@@ -135,6 +172,12 @@ export default defineComponent({
       right: 5px;
       cursor: pointer;
     }
+  }
+
+  &__users {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
 }
 

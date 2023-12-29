@@ -16,6 +16,10 @@
         :friend-game-session-id="friendGameSessionID"
         :is-opponent-connected="opponent ? true : false"
         :is-player-turn="isPlayerTurn"
+        :user="user"
+        :opponent="opponentUser"
+        :user-player="player"
+        :opponent-player="opponent"
       />
       <div class="game__container">
         <ship-container

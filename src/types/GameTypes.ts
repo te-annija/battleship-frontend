@@ -45,6 +45,8 @@ export type Gameboard = {
 
 /** Represents an individual cell on the gameboard.*/
 export type GameboardCell = {
+  id: number
+
   /** The state of the cell (e.g., empty, hit, missed). */
   state: string
 
@@ -55,6 +57,10 @@ export type GameboardCell = {
   ship?: Ship
 
   adjacentCount: number
+
+  origin?: string
+
+  updatedAt: string
 }
 
 /** Represents battleship status. */

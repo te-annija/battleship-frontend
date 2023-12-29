@@ -20,6 +20,7 @@
           <div v-if="user.isAdmin"><router-link to="/admin">Admin Panel</router-link></div>
           <div><router-link :to="`/user/${user.username}`">Profile</router-link></div>
           <div><router-link to="/settings">Settings</router-link></div>
+          <div><router-link to="/history">Game history</router-link></div>
         </account-widget>
         <div v-else>
           <router-link to="/login"> Log In </router-link>

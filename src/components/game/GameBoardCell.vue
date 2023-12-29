@@ -8,7 +8,8 @@
     class="gameboard__cell"
     :class="{
       'gameboard__cell-ship':
-        (cell && cell.ship) || (cell && cell.state === 'ship' && !cell.shipPlacementState),
+        (cell && cell.ship && !isReplayMode) ||
+        (cell && cell.state === 'ship' && !cell.shipPlacementState),
       'gameboard__cell-adjacent':
         !isGameMode && cell && cell.state === 'adjacent' && !cell.shipPlacementState,
       'gameboard__cell-hit': cell && cell.state === 'hit',
@@ -65,11 +66,15 @@ export default defineComponent({
     },
     isGameMode: {
       type: Boolean as PropType<Boolean>,
-      required: true
+      default: false
     },
     isEditMode: {
       type: Boolean as PropType<Boolean>,
-      required: true
+      default: false
+    },
+    isReplayMode: {
+      type: Boolean as PropType<Boolean>,
+      default: false
     },
     isPlayerTurn: {
       type: Boolean as PropType<Boolean>,

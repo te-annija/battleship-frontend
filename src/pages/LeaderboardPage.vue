@@ -4,7 +4,7 @@
   AUTHOR: Annija Karitone
 -->
 <template>
-  <div class="leaderboard">
+  <div class="leaderboard container">
     <div v-if="loading" class="box-shadow card leaderboard__loading">
       <span class="loader"></span> Loading...
     </div>
