@@ -116,9 +116,12 @@ h1 {
 }
 
 a {
-  text-decoration: none;
+  text-decoration: underline;
   color: inherit;
   font-family: 'Patrick Hand', cursive;
+  &:hover {
+    color: $cl-deep-blue;
+  }
 }
 
 button {

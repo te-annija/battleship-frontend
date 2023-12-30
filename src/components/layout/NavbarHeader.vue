@@ -11,6 +11,7 @@
       </router-link>
       <div class="navbar__top-links">
         <router-link to="/game">Battleship Game</router-link>
+        <router-link to="/rules">Rules</router-link>
         <router-link v-if="user" to="/leaderboard">Leaderboard</router-link>
       </div>
 
@@ -77,6 +78,7 @@ export default defineComponent({
     a {
       color: $cl-text;
       text-transform: uppercase;
+      text-decoration: none;
 
       &:hover,
       &.router-link-exact-active {

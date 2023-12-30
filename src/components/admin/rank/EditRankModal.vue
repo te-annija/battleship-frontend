@@ -140,12 +140,14 @@ export default defineComponent({
 })
 </script>
 <style scoped lang="scss">
+@import '../../../assets/styles/_variables';
+
 .form-group {
   position: relative;
 }
 
 .form-change {
-  color: blue;
+  color: $cl-deep-blue;
   cursor: pointer;
   z-index: 10;
   position: absolute;

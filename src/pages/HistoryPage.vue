@@ -262,14 +262,6 @@ export default defineComponent({
       padding: 5px;
       text-align: center;
     }
-
-    a {
-      text-decoration: underline;
-
-      &:hover {
-        color: blue;
-      }
-    }
   }
 }
 </style>

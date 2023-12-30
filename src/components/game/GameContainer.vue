@@ -554,14 +554,6 @@ export default defineComponent({
       padding: 20px;
       background-color: $cl-bg-card;
       border-radius: 10px;
-
-      a {
-        text-decoration: underline;
-
-        &:hover {
-          color: blue;
-        }
-      }
     }
   }
 

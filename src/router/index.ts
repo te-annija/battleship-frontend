@@ -17,6 +17,7 @@ import RankManagement from '@/components/admin/RankManagement.vue'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
 import HistoryPage from '@/pages/HistoryPage.vue'
+import RulesPage from '@/pages/RulesPage.vue'
 import { useUserStore } from '@/stores/user'
 import authService from '@/services/AuthService'
 import { useToast } from 'vue-toastification'
@@ -35,6 +36,11 @@ const router = createRouter({
       path: '/game',
       name: 'game',
       component: GamePage
+    },
+    {
+      path: '/rules',
+      name: 'rules',
+      component: RulesPage
     },
     {
       path: '/leaderboard',

@@ -120,7 +120,7 @@ export default defineComponent({
     }
 
     &-change {
-      color: blue;
+      color: $cl-deep-blue;
       cursor: pointer;
       position: absolute;
       top: 0;

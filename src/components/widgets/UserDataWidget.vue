@@ -61,12 +61,5 @@ export default defineComponent({
   div {
     line-height: 16px;
   }
-  a {
-    text-decoration: underline;
-
-    &:hover {
-      color: blue;
-    }
-  }
 }
 </style>

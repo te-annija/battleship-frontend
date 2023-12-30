@@ -1,5 +1,5 @@
 <template>
-  <img :src="imgPath" :alt="rank.title" />
+  <img :src="imgPath" :alt="rank.title" :height="25" />
 </template>
 
 <script lang="ts">

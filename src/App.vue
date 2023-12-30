@@ -11,6 +11,7 @@
       <main class="main">
         <router-view />
       </main>
+      <main-footer />
     </div>
     <router-view v-else />
   </div>
@@ -20,12 +21,14 @@
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 import NavbarHeader from '@/components/layout/NavbarHeader.vue'
+import MainFooter from './components/layout/MainFooter.vue'
 import './assets/styles/app.scss'
 
 export default defineComponent({
   components: {
     RouterView,
-    NavbarHeader
+    NavbarHeader,
+    MainFooter
   },
   computed: {
     isAdminPage() {
@@ -53,12 +56,13 @@ export default defineComponent({
 }
 .main {
   width: 100%;
-  min-height: 100vh;
-  padding-top: 100px;
+  height: fit-content;
+  min-height: calc(100% - 35px);
+  padding: 80px 0 20px 0;
   background: $cl-bg-overlay;
 }
 
 .wrapper {
-  height: 100%;
+  height: 100vh;
 }
 </style>
