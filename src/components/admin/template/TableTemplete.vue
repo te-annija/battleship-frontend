@@ -29,11 +29,7 @@
         <tbody>
           <tr v-for="entity in paginatedEntity" :key="entity.id">
             <td v-for="header in localTableHeaders" :key="header.field">
-              <img
-                v-if="header.inputType === 'img'"
-                :src="getImgPath(entity[header.field])"
-                height="30"
-              />
+              <img v-if="header.inputType === 'img'" :src="entity[header.field]" height="30" />
               <span v-else>{{ formatCellValue(entity[header.field]) }}</span>
             </td>
             <td class="management__table-actions">
@@ -103,9 +99,6 @@ export default defineComponent({
       }
 
       return value
-    },
-    getImgPath(value: string) {
-      return `${import.meta.env.VITE_SERVER_URL}${value}`
     },
     previousPage() {
       if (Number(this.currentPage) > 1) {

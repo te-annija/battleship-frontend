@@ -5,12 +5,15 @@
 -->
 <template>
   <div class="game container">
-    <div v-if="!player || loadingFriendGame" class="game__container card box-shadow">
+    <div
+      v-if="!player || !gameboard || !attackGameboard || loadingFriendGame"
+      class="game__container card box-shadow"
+    >
       <div class="game__loading">
         <div><span class="spinner" /> Loading ...</div>
       </div>
     </div>
-    <div v-if="player && !loadingFriendGame" class="card box-shadow game__container-wrap">
+    <div v-else class="card box-shadow game__container-wrap">
       <game-instructions
         :status="status"
         :friend-game-session-id="friendGameSessionID"
@@ -38,12 +41,8 @@
       <div class="game__container">
         <ship-container
           class="game__shipcontainer"
-          v-if="
-            player.gameboard &&
-            status !== gameStatusType.Game &&
-            status !== gameStatusType.GameEnded
-          "
-          :ships="player.gameboard.ships"
+          v-if="gameboard && status !== gameStatusType.Game && status !== gameStatusType.GameEnded"
+          :ships="gameboard.ships"
           :is-game-mode="false"
           :is-edit-mode="
             status === gameStatusType.WaitingActive || status === gameStatusType.Prepare
@@ -55,8 +54,8 @@
         <div class="game__container-main">
           <div class="game__gameboard">
             <game-board
-              v-if="player.gameboard"
-              :gameboard="player.gameboard"
+              v-if="gameboard"
+              :gameboard="gameboard"
               :is-game-mode="status === gameStatusType.Game"
               :is-edit-mode="
                 status === gameStatusType.Prepare || status === gameStatusType.WaitingActive
@@ -93,8 +92,8 @@
             class="game__gameboard"
           >
             <game-board
-              v-if="player.attackGameboard"
-              :gameboard="player.attackGameboard"
+              v-if="attackGameboard"
+              :gameboard="attackGameboard"
               :is-game-mode="status === gameStatusType.Game"
               :is-edit-mode="false"
               :is-waiting-mode="false"
@@ -104,7 +103,7 @@
             />
           </div>
           <div v-if="status === gameStatusType.Prepare" class="game__actions-create">
-            <button :disabled="!isShipsPlaced" @click="startGame('random')">Play Online</button>
+            <button :disabled="!isShipsPlaced" @click="startGame('online')">Play Online</button>
             <button :disabled="!isShipsPlaced" @click="startGame('friend')">
               Play With Friend
             </button>
@@ -174,7 +173,7 @@ import GameBoard from './GameBoard.vue'
 import ShipContainer from './ShipContainer.vue'
 import GameWaitingroom from './GameWaitingroom.vue'
 import { type WebsocketMessage } from '@/types/WebSocketTypes'
-import { type Player, type Ship, GameStatus } from '@/types/GameTypes'
+import { type Player, type Ship, GameStatus, type Gameboard } from '@/types/GameTypes'
 import { $bus } from '@/utils/GlobalEmit'
 import { useToast, POSITION } from 'vue-toastification'
 import { mapActions, mapState } from 'pinia'
@@ -190,6 +189,8 @@ export default defineComponent({
     return {
       socketService: null as WebSocketService | null,
       player: null as Player | null,
+      gameboard: null as Gameboard | null,
+      attackGameboard: null as Gameboard | null,
       opponent: null as Player | null,
       opponentUser: null as User | null,
       status: GameStatus.Prepare as GameStatus,
@@ -241,11 +242,7 @@ export default defineComponent({
     ...mapState(useUserStore, ['user']),
     ...mapActions(useUserStore, ['fetchUserData']),
     isShipsPlaced() {
-      return this.player &&
-        this.player.gameboard &&
-        this.player.gameboard.ships.every((ship) => ship.isOnBoard)
-        ? true
-        : false
+      return this.gameboard && this.gameboard.ships.every((ship) => ship.isOnBoard) ? true : false
     }
   },
   methods: {
@@ -257,6 +254,15 @@ export default defineComponent({
         case 'player':
           if (data.data.player) {
             this.player = data.data.player
+          }
+          break
+        case 'gameboard':
+          if (data.data.gameboard) {
+            if (data.data.type === 'player') {
+              this.gameboard = data.data.gameboard
+            } else if (data.data.type === 'attack') {
+              this.attackGameboard = data.data.gameboard
+            }
           }
           break
         case 'game-started':
@@ -315,11 +321,6 @@ export default defineComponent({
             this.handleLeaveGame()
           }
           break
-        case 'ready-status':
-          if (this.opponent && data.data.status) {
-            this.opponent.isReady = data.data.status
-          }
-          break
         case 'timer':
           if (data.data.timer) {
             this.timer = data.data.timer
@@ -344,6 +345,10 @@ export default defineComponent({
             this.opponent.isReady = false
           }
 
+          if (this.player) {
+            this.player.isReady = false
+          }
+
           await this.fetchUserData
 
           if (this.opponentUser) {
@@ -365,16 +370,15 @@ export default defineComponent({
       }
     },
     handleSelectShip(ship: Ship) {
-      if (!this.player || !this.player.gameboard) return
-      if (!ship || !ship.isOnBoard) return
-      const size = this.player.gameboard.size
+      if (!this.gameboard || !ship || !ship.isOnBoard) return
+      const size = this.gameboard.size
       let endRow = ship.position.isVertical ? ship.position.row + ship.size : ship.position.row + 1
       let endCol = ship.position.isVertical ? ship.position.col + 1 : ship.position.col + ship.size
 
       for (let i = ship.position.row - 1; i <= endRow; i++) {
         for (let j = ship.position.col - 1; j <= endCol; j++) {
           if (i >= 0 && i < size && j >= 0 && j <= size) {
-            const cell = this.player.gameboard.grid[i][j]
+            const cell = this.gameboard.grid[i][j]
 
             if (cell && cell.adjacentCount && cell.adjacentCount <= 1) {
               cell.state = 'empty'
@@ -387,7 +391,7 @@ export default defineComponent({
     },
     handleDropShip(ship: Ship, rowIndex: number, colIndex: number) {
       this.sendSimpleAction('place-ship', {
-        ship_id: ship.id,
+        shipId: ship.id,
         position: {
           row: rowIndex,
           col: colIndex,
@@ -397,7 +401,7 @@ export default defineComponent({
     },
     handleRemoveShip(event: DragEvent) {
       if (event && event.dataTransfer) {
-        this.sendSimpleAction('remove-ship', { ship_id: event.dataTransfer.getData('shipId') })
+        this.sendSimpleAction('remove-ship', { shipId: event.dataTransfer.getData('shipId') })
       }
     },
     handleAttackCell(rowIndex: number, colIndex: number) {
@@ -419,21 +423,20 @@ export default defineComponent({
     },
     toggleReady() {
       if (this.player) {
-        const isReady = this.player.isReady
-        this.player.isReady = !isReady
+        this.player.isReady = !this.player.isReady
         if (this.player.isReady) {
           this.status = this.gameStatusType.Waiting
         } else {
           this.status = this.gameStatusType.WaitingActive
         }
 
-        this.sendSimpleAction('ready', { status: !isReady })
+        this.sendSimpleAction('ready', { status: this.player.isReady })
       }
     },
     startGame(gameMode: string) {
       switch (gameMode) {
-        case 'random':
-          this.sendSimpleAction('join-game-random', { type: 'random' })
+        case 'online':
+          this.sendSimpleAction('join-game-online', { type: 'online' })
           break
         case 'computer':
           this.sendSimpleAction('create-game', { type: 'computer' })

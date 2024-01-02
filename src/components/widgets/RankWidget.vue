@@ -1,5 +1,5 @@
 <template>
-  <img :src="imgPath" :alt="rank.title" :height="25" />
+  <img :src="rank.icon" :alt="rank.title" :height="25" />
 </template>
 
 <script lang="ts">
@@ -11,11 +11,6 @@ export default defineComponent({
     rank: {
       type: Object as PropType<Rank>,
       required: true
-    }
-  },
-  computed: {
-    imgPath() {
-      return `${import.meta.env.VITE_SERVER_URL}${this.rank.icon}`
     }
   }
 })

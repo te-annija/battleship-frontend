@@ -67,7 +67,9 @@ export class WebSocketService {
    * @param event Data passed from a Websocket open event.
    */
   private handleOpen(event: Event) {
-    console.log('Connected to server')
+    if (import.meta.env.VITE_ENV === 'development') {
+      console.log('Connected to server')
+    }
     $bus.emit('websocket-connected', event)
   }
 
@@ -77,7 +79,10 @@ export class WebSocketService {
    */
   private handleMessage(event: MessageEvent) {
     const data: WebsocketMessage = JSON.parse(event.data)
-    console.log('Received from server:', data)
+
+    if (import.meta.env.VITE_ENV === 'development') {
+      console.log('Received from server:', data)
+    }
 
     if (data.data && data.data.player && !cookieService.getUserId()) {
       cookieService.setUserId(data.data.player.id)
@@ -91,7 +96,9 @@ export class WebSocketService {
    * @param event Data passed from a Websocket close event.
    */
   private handleClose(event: CloseEvent) {
-    console.log('Disconnected from server')
+    if (import.meta.env.VITE_ENV === 'development') {
+      console.log('Disconnected from server')
+    }
     $bus.emit('websocket-disconnected', event)
   }
 

@@ -28,7 +28,7 @@
           <td v-if="player.data">
             <img
               v-if="player.user && player.user.rank"
-              :src="getImgPath(player.user.rank.icon)"
+              :src="player.user.rank.icon"
               :alt="player.user.rank.title"
             />
             <span>{{ player.user && player.user.rank ? player.user.rank.title : '-' }}</span>
@@ -95,11 +95,6 @@ export default defineComponent({
         { type: 'you', data: this.player, user: this.playerUser },
         { type: 'opponent', data: this.opponent, user: this.opponentUser }
       ]
-    }
-  },
-  methods: {
-    getImgPath(value: any) {
-      return `${import.meta.env.VITE_SERVER_URL}${value}`
     }
   }
 })

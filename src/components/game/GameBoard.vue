@@ -24,7 +24,17 @@
       <game-board-cell
         v-for="(cell, colIndex) in row"
         :key="rowIndex + '' + colIndex"
-        :class="{ 'brdr-top-none': rowIndex > 0 }"
+        :class="{
+          'brdr-top-none': rowIndex > 0,
+          'gameboard__cell-attacked': gameboard.lastAttack
+            ? gameboard.lastAttack.row === rowIndex && gameboard.lastAttack.col === colIndex
+            : false,
+          'gameboard__cell-attack-hit': gameboard.lastAttack
+            ? gameboard.lastAttack.row === rowIndex &&
+              gameboard.lastAttack.col === colIndex &&
+              cell.state === 'hit'
+            : false
+        }"
         :cell="cell"
         :row="rowIndex"
         :column="colIndex"
@@ -160,6 +170,16 @@ export default defineComponent({
       align-items: center;
       justify-content: center;
       font-size: 14px;
+    }
+  }
+
+  &__cell {
+    &-attacked {
+      background-color: #79777745;
+    }
+
+    &-attack-hit {
+      background-color: #b66b6b93;
     }
   }
 

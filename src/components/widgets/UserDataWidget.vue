@@ -40,14 +40,6 @@ export default defineComponent({
       type: Boolean as PropType<Boolean>,
       default: false
     }
-  },
-  computed: {
-    imgPath() {
-      if (!this.rank) {
-        return ''
-      }
-      return `${import.meta.env.VITE_SERVER_URL}${this.rank.icon}`
-    }
   }
 })
 </script>

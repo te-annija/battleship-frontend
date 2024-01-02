@@ -12,13 +12,7 @@ export type Player = {
   /** The public name of the player. */
   username: string
 
-  /** The player's own gameboard. */
-  gameboard?: Gameboard
-
-  /** The results of the player's attacks on the enemy's gameboard. */
-  attackGameboard?: Gameboard
-
-  /** True if player is ready to start the game. */
+  /** Indicates if player is ready to start the game in a session. */
   isReady: boolean
 
   /** The id of the game session where player is currently playing. */
@@ -30,17 +24,14 @@ export type Gameboard = {
   /** The row and column count of the gameboard in units. */
   size: number
 
-  /** The minimum coordinate value. */
-  coord_min: number
-
-  /** The maximum coordinate value (size - 1). */
-  coord_max: number
-
   /** A 2D grid containing board cells with the same rows and columns as size. */
   grid: GameboardCell[][]
 
   /** All ships on the board. */
   ships: Ship[]
+
+  /** Last opponent attack coordinates on the gameboard. */
+  lastAttack?: { row: number; col: number }
 }
 
 /** Represents an individual cell on the gameboard.*/
@@ -56,10 +47,13 @@ export type GameboardCell = {
   /** Reference to an occupying ship, or null if the cell is empty*/
   ship?: Ship
 
+  /** The number of adjacent ships to the cell. */
   adjacentCount: number
 
+  /** Inticates if cell belongs to player or attack gameboard. */
   origin?: string
 
+  /** The datetime of the attack on the cell. */
   updatedAt: string
 }
 
