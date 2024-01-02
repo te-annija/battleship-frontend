@@ -187,4 +187,10 @@ html[data-theme='light'] {
     filter: invert(100%);
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .instructions {
+    margin-bottom: 5px;
+  }
+}
 </style>

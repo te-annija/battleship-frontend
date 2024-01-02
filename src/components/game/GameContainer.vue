@@ -182,6 +182,7 @@ import type { User } from '@/types/User'
 import userService from '@/services/UserService'
 import GameInstructions from './GameInstructions.vue'
 import { RouterLink } from 'vue-router'
+import cookieService from '@/services/CookieService'
 const TIMER_DURATION_SECONDS = 90
 
 export default defineComponent({
@@ -436,7 +437,10 @@ export default defineComponent({
     startGame(gameMode: string) {
       switch (gameMode) {
         case 'online':
-          this.sendSimpleAction('join-game-online', { type: 'online' })
+          this.sendSimpleAction('join-game-online', {
+            type: 'online',
+            token: cookieService.getToken()
+          })
           break
         case 'computer':
           this.sendSimpleAction('create-game', { type: 'computer' })
@@ -451,6 +455,10 @@ export default defineComponent({
       this.status = this.gameStatusType.WaitingActive
     },
     handleWebsocketConnected() {
+      this.sendSimpleAction('init-player', {
+        id: cookieService.getUserId(),
+        token: cookieService.getToken()
+      })
       if (this.friendGameSessionID) {
         setTimeout(() => {
           this.sendSimpleAction('join-game-friend', { id: this.friendGameSessionID })
@@ -531,7 +539,6 @@ export default defineComponent({
   &__gameboard {
     display: flex;
     flex-direction: column;
-    width: 100%;
     max-width: 330px;
     gap: 10px;
   }
@@ -616,6 +623,28 @@ export default defineComponent({
 
     &-reset {
       transition: none;
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .game {
+    &__container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &__shipcontainer {
+      margin-top: 5px;
+    }
+
+    &__actions {
+      &-edit {
+        margin-left: $cell-size-mobile;
+      }
+      &-create {
+        margin-left: 0;
+      }
     }
   }
 }

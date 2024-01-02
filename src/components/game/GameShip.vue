@@ -128,8 +128,8 @@ export default defineComponent({
   }
 
   &__cell {
-    width: 30px;
-    height: 30px;
+    width: $cell-size;
+    height: $cell-size;
     border: 1px solid $cl-brdr-game;
 
     &-horizontal + &-horizontal {
@@ -150,6 +150,15 @@ export default defineComponent({
     right: 0;
     background: $bg-rotate no-repeat center center;
     background-size: 10px 10px;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .ship {
+    &__cell {
+      width: $cell-size-mobile;
+      height: $cell-size-mobile;
+    }
   }
 }
 </style>

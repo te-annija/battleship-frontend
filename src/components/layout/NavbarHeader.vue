@@ -4,22 +4,22 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="navbar__top-wrapper box-shadow">
-    <nav class="navbar__top">
+  <div class="navbar-wrapper box-shadow">
+    <nav class="navbar">
       <router-link to="/">
         <img alt="Battleship logo" class="logo" src="@/assets/logo.svg" width="75" height="45" />
       </router-link>
-      <div class="navbar__top-links">
+      <div class="navbar__links">
         <router-link to="/game">Battleship Game</router-link>
         <router-link to="/rules">Rules</router-link>
-        <router-link v-if="user" to="/leaderboard">Leaderboard</router-link>
       </div>
 
-      <div class="navbar__top-right">
+      <div class="navbar__right">
         <theme-widget />
         <account-widget v-if="user" :user="user">
           <div v-if="user.isAdmin"><router-link to="/admin">Admin Panel</router-link></div>
           <div><router-link :to="`/user/${user.username}`">Profile</router-link></div>
+          <div><router-link to="/leaderboard">Leaderboard</router-link></div>
           <div><router-link to="/settings">Settings</router-link></div>
           <div><router-link to="/history">Game history</router-link></div>
         </account-widget>
@@ -44,14 +44,24 @@ export default defineComponent({
     ThemeWidget,
     AccountWidget
   },
+  data() {
+    return {
+      showMenu: false as boolean
+    }
+  },
   computed: {
     ...mapState(useUserStore, ['user'])
+  },
+  mounted() {
+    this.$router.afterEach(() => {
+      this.showMenu = false // Close the menu on route change
+    })
   }
 })
 </script>
 <style scoped lang="scss">
 @import '../../assets/styles/_variables';
-.navbar__top {
+.navbar {
   height: 60px;
   max-width: 1200px;
   margin: 0 auto;
@@ -69,7 +79,7 @@ export default defineComponent({
     border-bottom: solid 2px $cl-primary;
   }
 
-  &-links {
+  &__links {
     padding: 0 20px;
     display: flex;
     align-items: center;
@@ -87,7 +97,7 @@ export default defineComponent({
     }
   }
 
-  &-right {
+  &__right {
     margin-left: auto;
     display: flex;
     align-items: center;
@@ -97,6 +107,25 @@ export default defineComponent({
       display: inline-block;
       width: 100%;
     }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .navbar {
+    height: 50px;
+    font-size: 14px;
+
+    &__links {
+      padding: 0 10px;
+      gap: 10px;
+    }
+
+    &-wrapper {
+      height: 50px;
+    }
+  }
+  .logo {
+    max-width: 50px;
   }
 }
 </style>

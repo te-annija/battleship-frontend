@@ -108,5 +108,42 @@ export default defineComponent({
     -webkit-transform: translateX(0px);
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .theme_toggle {
+    width: 30px;
+    height: 20px;
+  }
+
+  .theme_slider {
+    border: solid 2px $cl-primary;
+    border-radius: 10px;
+
+    &:before {
+      height: 15px;
+      width: 15px;
+      background-size: 10px 10px;
+    }
+
+    input:checked + &:before {
+      background-size: 10px 10px;
+    }
+  }
+
+  @keyframes going-left {
+    100% {
+      -webkit-transform: translateX(10px);
+    }
+  }
+
+  @keyframes going-right {
+    0% {
+      -webkit-transform: translateX(10px);
+    }
+    100% {
+      -webkit-transform: translateX(0px);
+    }
+  }
+}
 </style>
 @/services/CookieService

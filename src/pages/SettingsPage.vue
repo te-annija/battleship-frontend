@@ -4,7 +4,7 @@
   AUTHOR: Annija Karitone
 -->
 <template>
-  <div class="settings">
+  <div class="settings container">
     <div class="box-shadow card">
       <h1 class="text-center">SETTINGS</h1>
 

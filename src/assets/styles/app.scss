@@ -214,6 +214,16 @@ button {
   opacity: 0.5;
 }
 
+@media only screen and (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

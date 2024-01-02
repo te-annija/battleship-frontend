@@ -8,6 +8,10 @@ $cl-brown: #d1bfbf;
 $cl-red: #f85149;
 $cl-deep-blue: #0066ff;
 
+// Gameboard sizes.
+$cell-size: 30px;
+$cell-size-mobile: 25px;
+
 // Variable definitions for light theme.
 html[data-theme='light'] {
   --cl-text: #080417;

@@ -44,6 +44,7 @@ export class AuthService {
    */
   logout() {
     try {
+      cookieService.removeUserId()
       cookieService.removeToken()
     } catch (error: any) {
       throw new Error(error.message)

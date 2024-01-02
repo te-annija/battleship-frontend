@@ -154,6 +154,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import '../../assets/styles/_variables';
 .gameboard {
   &__row,
   &__header {
@@ -161,11 +162,11 @@ export default defineComponent({
   }
 
   &__header {
-    margin-left: 30px;
+    margin-left: $cell-size;
 
     &-cell {
-      width: 30px;
-      height: 30px;
+      width: $cell-size;
+      height: $cell-size;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -185,6 +186,19 @@ export default defineComponent({
 
   &-overlay {
     opacity: 0.4;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .gameboard {
+    &__header {
+      margin-left: $cell-size-mobile;
+
+      &-cell {
+        width: $cell-size-mobile;
+        height: $cell-size-mobile;
+      }
+    }
   }
 }
 </style>

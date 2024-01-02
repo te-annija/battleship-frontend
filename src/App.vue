@@ -65,4 +65,10 @@ export default defineComponent({
 .wrapper {
   height: 100vh;
 }
+
+@media only screen and (max-width: 600px) {
+  .main {
+    padding-top: 50px;
+  }
+}
 </style>

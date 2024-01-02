@@ -25,20 +25,6 @@
         <span v-if="!game.winner || !game.winner.username"> (Winner) </span>
       </user-data-widget>
     </div>
-    <div class="replay__gameboards">
-      <GameBoardVue
-        v-if="gameboard"
-        :gameboard="gameboard"
-        :is-player-game-board="true"
-        :is-replay-mode="true"
-      ></GameBoardVue>
-      <GameBoardVue
-        v-if="attackGameboard"
-        :gameboard="attackGameboard"
-        :is-player-game-board="false"
-        :is-replay-mode="true"
-      ></GameBoardVue>
-    </div>
     <div class="replay__progress">
       <img v-if="!replayInProgress" alt="Play" src="@/assets/icons/play.svg" @click="handlePlay" />
       <img
@@ -57,6 +43,20 @@
           @input="handleProgressChange"
         />
       </div>
+    </div>
+    <div class="replay__gameboards">
+      <GameBoardVue
+        v-if="gameboard"
+        :gameboard="gameboard"
+        :is-player-game-board="true"
+        :is-replay-mode="true"
+      ></GameBoardVue>
+      <GameBoardVue
+        v-if="attackGameboard"
+        :gameboard="attackGameboard"
+        :is-player-game-board="false"
+        :is-replay-mode="true"
+      ></GameBoardVue>
     </div>
   </div>
 </template>
@@ -320,6 +320,18 @@ export default defineComponent({
         border: none;
         background: transparent;
       }
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .replay {
+    &__information {
+      padding: 5px 10px;
+    }
+
+    &__gameboards {
+      gap: 0;
     }
   }
 }

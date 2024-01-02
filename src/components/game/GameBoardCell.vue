@@ -97,8 +97,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: $cell-size;
+  height: $cell-size;
   border: 1px solid $cl-brdr-game;
 
   & + & {
@@ -164,5 +164,12 @@ export default defineComponent({
   z-index: 5;
   top: -1.4px;
   left: -1.4px;
+}
+
+@media only screen and (max-width: 600px) {
+  .gameboard__cell {
+    width: $cell-size-mobile;
+    height: $cell-size-mobile;
+  }
 }
 </style>

@@ -13,7 +13,7 @@
         width="35"
         height="35"
       />
-      <div>{{ user.username }}</div>
+      <div class="account-user">{{ user.username }}</div>
       <img
         alt="Open"
         class="account-open"
@@ -25,6 +25,13 @@
       />
     </div>
     <div v-if="showDropdown" class="account-dropdown box-shadow" @click="showDropdown = false">
+      <slot> </slot>
+      <div @click="logOutHandler">Log Out</div>
+    </div>
+    <div v-if="showDropdown" class="account-menu" @click="showDropdown = false">
+      <div>
+        {{ user.username }}
+      </div>
       <slot> </slot>
       <div @click="logOutHandler">Log Out</div>
     </div>
@@ -107,7 +114,7 @@ export default defineComponent({
     transition: transform 0.5s cubic-bezier(0, 0.96, 0.9, 1.21);
   }
 
-  &-dropdown:deep {
+  :deep(.account-dropdown) {
     position: absolute;
     left: 0px;
     top: 35px;
@@ -130,6 +137,30 @@ export default defineComponent({
       }
     }
   }
+
+  :deep(.account-menu) {
+    display: none;
+    position: fixed;
+    top: 50px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background-color: $cl-bg-navbar;
+
+    div {
+      cursor: pointer;
+      display: block;
+      font-size: 20px;
+      width: 100%;
+      text-align: center;
+      height: 30px;
+      margin-top: 10px;
+
+      &:hover {
+        background: transparentize($cl-secondary, 0.6);
+      }
+    }
+  }
 }
 
 @keyframes growDown {
@@ -141,6 +172,27 @@ export default defineComponent({
   }
   100% {
     transform: scaleY(1);
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .account {
+    background: none;
+    box-shadow: none;
+    border: none;
+    min-width: auto;
+
+    :deep(.account-dropdown) {
+      display: none;
+    }
+    :deep(.account-menu) {
+      display: block;
+    }
+
+    &-image,
+    &-user {
+      display: none;
+    }
   }
 }
 </style>

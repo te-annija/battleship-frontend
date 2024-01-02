@@ -39,7 +39,7 @@
                 :key="game.id"
                 :class="[game.winnerId === user.id ? 'history__row-won' : 'history__row-lost']"
               >
-                <td>{{ game.createdAt }}</td>
+                <td>{{ formatDate(game.createdAt) }}</td>
                 <td>
                   <router-link
                     v-if="game.players.length > 1"
@@ -113,20 +113,21 @@ export default defineComponent({
     }
   },
   methods: {
-    getOpponentUsername(game: any): string {
-      const user = this.user
-
-      if (!user) {
-        return 'Unknown'
+    formatDate(value: string) {
+      const date: Date = new Date(value)
+      if (!isNaN(date.getTime()) && typeof value === 'string') {
+        return date.toLocaleString()
       }
-
+      return value
+    },
+    getOpponentUsername(game: any): string {
       if (game && game.gameType === 'computer') {
         return 'Friendly AI'
       }
 
-      const opponent = game.players.find((player: any) => {
-        player.username !== user.username
-      })
+      const opponent = game.players.find(
+        (player: any) => player.GameUser.userId !== game.GameUser.userId
+      )
 
       if (!opponent) {
         return 'Guest'
@@ -153,6 +154,7 @@ export default defineComponent({
       }
     },
     async filterByGameType(gameType: string) {
+      this.currentPage = 1
       this.selectedGameType = gameType
       await this.fetchGames()
     },
@@ -261,6 +263,17 @@ export default defineComponent({
     td {
       padding: 5px;
       text-align: center;
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .history {
+    table {
+      td,
+      th {
+        padding: 1px 2px;
+      }
     }
   }
 }

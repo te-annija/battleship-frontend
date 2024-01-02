@@ -4,7 +4,11 @@
   AUTHOR: Annija Karitone 
 -->
 <template>
-  <div class="admin__sidebar box-shadow" :class="{ 'admin__sidebar-collapsed': isCollapsed }">
+  <div
+    class="admin__sidebar box-shadow"
+    :class="{ 'admin__sidebar-collapsed': isCollapsed }"
+    @mouseleave="isCollapsed = true"
+  >
     <img
       v-if="isCollapsed"
       class="admin__sidebar-collapse"
@@ -25,7 +29,7 @@
       <img v-if="!isCollapsed" alt="Battleship logo" src="@/assets/logo.svg" :width="100" />
       <p v-if="!isCollapsed">BATTLESHIP GAME</p>
     </div>
-    <ul>
+    <ul @click="isCollapsed = true">
       <li>
         <router-link to="/admin">
           <img alt="dashboard" src="@/assets/icons/dashboard.svg" width="20" />
@@ -58,7 +62,7 @@ export default defineComponent({
   },
   data() {
     return {
-      isCollapsed: false
+      isCollapsed: true
     }
   }
 })
@@ -68,7 +72,8 @@ export default defineComponent({
 @import '../../../assets/styles/_variables';
 
 .admin__sidebar {
-  position: relative;
+  position: fixed;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: $cl-bg-admin;

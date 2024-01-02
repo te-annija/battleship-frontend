@@ -37,6 +37,7 @@ export default defineComponent({
   max-width: 100vw;
 
   &-content {
+    padding-left: 60px;
     position: relative;
     width: 100%;
     min-width: 0;

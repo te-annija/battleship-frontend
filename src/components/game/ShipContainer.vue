@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="ships" :class="{ 'ships-inactive': !isEditMode }">
-    <div v-for="type in shipTypes" :key="type">
+    <div class="ships__block" v-for="type in shipTypes" :key="type">
       <p>{{ type }}</p>
       <div class="ships__type">
         <div
@@ -32,7 +32,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import GameShip from './GameShip.vue'
-import { type Ship, type Ship as ShipInterface } from '@/types/GameTypes'
+import { type Ship as ShipInterface } from '@/types/GameTypes'
 
 export default defineComponent({
   components: {
@@ -126,8 +126,31 @@ export default defineComponent({
   }
 
   &__cell {
-    width: 30px;
-    height: 30px;
+    width: $cell-size;
+    height: $cell-size;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .ships {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    &__cell {
+      width: $cell-size-mobile;
+      height: $cell-size-mobile;
+    }
+
+    &__block {
+      min-width: 40%;
+      margin: 0 auto;
+    }
+
+    &__type {
+      gap: 5px;
+      padding-bottom: 5px;
+    }
   }
 }
 </style>

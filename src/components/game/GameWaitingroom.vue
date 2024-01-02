@@ -103,6 +103,7 @@ export default defineComponent({
 <style scoped lang="scss">
 @import '../../assets/styles/_variables';
 .waitingroom {
+  order: 1;
   margin-top: 30px;
   margin-left: 30px;
   padding: 10px;
@@ -131,6 +132,19 @@ export default defineComponent({
 
   &-status {
     padding-left: 2px;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .waitingroom {
+    margin-top: 5px;
+    margin-left: 0;
+    width: 100%;
+    max-width: none;
+
+    table {
+      width: 100%;
+    }
   }
 }
 </style>
