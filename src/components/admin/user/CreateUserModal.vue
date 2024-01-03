@@ -16,8 +16,16 @@
       name="username"
       id="username"
       label="Username"
-      validation="required|length:3,16"
+      validation="required|length:3,32"
       help="Unique username. Will be displayed publicly."
+    />
+    <FormKit
+      type="email"
+      name="email"
+      id="email"
+      label="Email"
+      validation="required|length:3,64|email"
+      help="User email address."
     />
     <FormKit
       type="password"
@@ -28,7 +36,7 @@
     />
     <FormKit
       type="checkbox"
-      name="isAdmin"
+      name="role"
       label="Is Admin"
       help="Gives user admin previleges if checked."
     />

@@ -10,9 +10,9 @@
       <div class="ships__type">
         <div
           class="ships__ship"
-          :class="{ 'ships__ship-vertical': getShipIsVertical(ship.id) && !ship.isOnBoard }"
+          :class="{ 'ships__ship-vertical': getShipIsVertical(ship.shipId) && !ship.isOnBoard }"
           v-for="ship in getShipsByType(type)"
-          :key="ship.id"
+          :key="ship.shipId"
         >
           <div class="ships__cell" v-for="index in ship.size" v-bind:key="index">
             <game-ship
@@ -66,12 +66,12 @@ export default defineComponent({
     getShipsByType(type: string) {
       return this.ships.filter((ship) => ship.name === type)
     },
-    getShipIsVertical(id: string) {
-      const ship = this.shipsLocal.find((ship) => ship.id === id)
+    getShipIsVertical(shipId: string) {
+      const ship = this.shipsLocal.find((ship) => ship.shipId === shipId)
       return ship && ship.position.isVertical ? true : false
     },
-    handleSetRotation(id: string, isVertical: boolean) {
-      const ship = this.shipsLocal.find((ship) => ship.id === id)
+    handleSetRotation(shipId: string, isVertical: boolean) {
+      const ship = this.shipsLocal.find((ship) => ship.shipId === shipId)
 
       if (ship) {
         ship.position.isVertical = isVertical

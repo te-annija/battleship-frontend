@@ -48,7 +48,8 @@ export default defineComponent({
 @import '../../../assets/styles/_variables';
 /* Styles for Create User Modal */
 .modal {
-  position: absolute;
+  position: fixed;
+  margin-left: 30px;
   top: 0;
   left: 0;
   width: 100%;
@@ -71,6 +72,15 @@ export default defineComponent({
     justify-content: flex-end;
     button {
       margin-left: 10px;
+    }
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .modal {
+    &-content {
+      padding: 5px 10px;
+      min-width: 0;
     }
   }
 }

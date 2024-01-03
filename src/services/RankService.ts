@@ -23,7 +23,7 @@ export class RankService {
    */
   async getRanks(
     filters?: string,
-    sortBy: string = 'id',
+    sortBy: string = 'rankId',
     sortOrder: string = 'asc',
     paranoid: boolean = true
   ): Promise<Rank[]> {
@@ -78,12 +78,13 @@ export class RankService {
 
   /**
    * Sends a request to update a rank with given ID (admin permisions only).
+   * @param rankId The identifier of the rank.
    * @param rankData The rank data to be updated.
    * @returns The updated rank object and message.
    */
-  async updateRank(id: number, rankData: any): Promise<AxiosResponse<Rank>> {
+  async updateRank(rankId: number, rankData: any): Promise<AxiosResponse<Rank>> {
     try {
-      const response: AxiosResponse = await axios.put(`${API_URL}/${id}`, rankData, {
+      const response: AxiosResponse = await axios.put(`${API_URL}/${rankId}`, rankData, {
         headers: { ...authService.authHeader(), 'Content-Type': 'multipart/form-data' }
       })
       return response.data

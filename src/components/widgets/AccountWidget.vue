@@ -139,6 +139,7 @@ export default defineComponent({
   }
 
   :deep(.account-menu) {
+    z-index: 99;
     display: none;
     position: fixed;
     top: 50px;

@@ -53,18 +53,12 @@ export class AuthService {
 
   /**
    * Sends a request to save a new user.
-   * @param username The unique username of the user.
-   * @param password The password of the user.
-   * @param confirm The password confirmation. Should match the password for valid registration.
+   * @param userData The data to register a new user.
    * @returns The response data containing success message.
    */
-  async register(username: string, password: string, confirm: string): Promise<AxiosResponse> {
+  async register(userData: any): Promise<AxiosResponse> {
     try {
-      const response: AxiosResponse = await axios.post(`${API_URL}/register`, {
-        username: username,
-        password: password,
-        confirm: confirm
-      })
+      const response: AxiosResponse = await axios.post(`${API_URL}/register`, userData)
       return response.data
     } catch (error: any) {
       throw new Error(error.response.data.message || error.statusMessage)

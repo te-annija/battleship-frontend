@@ -17,7 +17,7 @@
       <div class="navbar__right">
         <theme-widget />
         <account-widget v-if="user" :user="user">
-          <div v-if="user.isAdmin"><router-link to="/admin">Admin Panel</router-link></div>
+          <div v-if="user.role"><router-link to="/admin">Admin Panel</router-link></div>
           <div><router-link :to="`/user/${user.username}`">Profile</router-link></div>
           <div><router-link to="/leaderboard">Leaderboard</router-link></div>
           <div><router-link to="/settings">Settings</router-link></div>

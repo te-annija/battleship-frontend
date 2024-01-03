@@ -11,16 +11,25 @@
     @submitForm="updateUser"
     @cancel="$emit('cancel')"
   >
-    <FormKit type="hidden" number name="id" :value="user.id" />
+    <FormKit type="hidden" number name="userId" :value="user.userId" />
     <div v-if="!user.deletedAt">
       <FormKit
         type="text"
         name="username"
         id="username"
         label="Username"
-        validation="required|length:3,16"
+        validation="required|length:3,32"
         help="Make sure to nofity user about the new username."
         :value="user.username"
+      />
+      <FormKit
+        type="email"
+        name="email"
+        id="email"
+        label="Email"
+        validation="required|length:3,64|email"
+        help="User email address."
+        :value="user.email"
       />
       <FormKit
         type="date"
@@ -31,10 +40,10 @@
       />
       <FormKit
         type="checkbox"
-        name="isAdmin"
+        name="role"
         label="Is Admin"
         help="Gives user admin previleges if checked."
-        :value="user.isAdmin"
+        :value="user.role"
       />
     </div>
     <div v-else>
@@ -80,7 +89,7 @@ export default defineComponent({
     async updateUser(values: any) {
       try {
         if (values.restore) {
-          const data: any = await userService.restore(values.id)
+          const data: any = await userService.restore(values.userId)
           toast.success(data.message)
         } else {
           const data: any = await userService.updateUser(values)

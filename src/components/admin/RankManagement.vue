@@ -8,7 +8,7 @@
     <table-templete
       :data="ranks"
       :table-headers="[
-        { label: 'Rank ID', field: 'id', filterValue: '', inputType: 'search' },
+        { label: 'Rank ID', field: 'rankId', filterValue: '', inputType: 'search' },
         { label: 'Title', field: 'title', filterValue: '', inputType: 'search' },
         { label: 'Icon', field: 'icon', filterValue: '', inputType: 'img' },
         { label: 'Difficulty', field: 'difficulty', filterValue: '', inputType: 'search' },

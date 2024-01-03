@@ -13,7 +13,7 @@
       <div v-if="user" class="profile__section">
         <h2>{{ user.username }}</h2>
         <p>Joined {{ formatDate(user.createdAt) }}</p>
-        <p>{{ user.isAdmin ? 'Administrator' : '' }}</p>
+        <p>{{ user.role ? 'Administrator' : '' }}</p>
       </div>
 
       <div v-if="user && userStats" class="profile__section">
@@ -103,10 +103,10 @@ export default defineComponent({
       return
     }
 
-    const statistics: any = await UserService.getUserStatistics(this.user.id.toString())
+    const statistics: any = await UserService.getUserStatistics(this.user.userId.toString())
     const currentUserStatistics: any =
       this.currentUser && this.currentUser.username !== username
-        ? await UserService.getUserStatistics(this.currentUser.id.toString())
+        ? await UserService.getUserStatistics(this.currentUser.userId.toString())
         : null
 
     this.userStats = {

@@ -270,9 +270,9 @@ export default defineComponent({
           this.status = this.gameStatusType.Game
           break
         case 'game-created':
-          if (data.data.id && data.data.type === 'friend') {
+          if (data.data.gameSessionId && data.data.type === 'friend') {
             this.status = this.gameStatusType.WaitingActive
-            this.friendGameSessionID = data.data.id
+            this.friendGameSessionID = data.data.gameSessionId
           }
           break
         case 'player-joined':
@@ -392,7 +392,7 @@ export default defineComponent({
     },
     handleDropShip(ship: Ship, rowIndex: number, colIndex: number) {
       this.sendSimpleAction('place-ship', {
-        shipId: ship.id,
+        shipId: ship.shipId,
         position: {
           row: rowIndex,
           col: colIndex,
@@ -418,6 +418,7 @@ export default defineComponent({
         this.status = this.gameStatusType.Prepare
         this.showLeaveConfirmation = false
         this.opponent = null
+        this.opponentUser = null
         this.friendGameSessionID = null
         this.$router.push({})
       }
@@ -456,12 +457,12 @@ export default defineComponent({
     },
     handleWebsocketConnected() {
       this.sendSimpleAction('init-player', {
-        id: cookieService.getUserId(),
+        playerId: cookieService.getUserId(),
         token: cookieService.getToken()
       })
       if (this.friendGameSessionID) {
         setTimeout(() => {
-          this.sendSimpleAction('join-game-friend', { id: this.friendGameSessionID })
+          this.sendSimpleAction('join-game-friend', { gameSessionId: this.friendGameSessionID })
         }, 1000)
       }
     },

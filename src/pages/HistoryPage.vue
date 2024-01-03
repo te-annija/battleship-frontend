@@ -36,8 +36,8 @@
             <tbody>
               <tr
                 v-for="game in paginatedGames"
-                :key="game.id"
-                :class="[game.winnerId === user.id ? 'history__row-won' : 'history__row-lost']"
+                :key="game.gameId"
+                :class="[game.winnerId === user.userId ? 'history__row-won' : 'history__row-lost']"
               >
                 <td>{{ formatDate(game.createdAt) }}</td>
                 <td>
@@ -49,7 +49,7 @@
                   >
                   <span v-else> {{ getOpponentUsername(game) }} </span>
                 </td>
-                <td>{{ game.winnerId === user.id ? 'You' : 'Opponent' }}</td>
+                <td>{{ game.winnerId === user.userId ? 'You' : 'Opponent' }}</td>
                 <td>{{ game.GameUser.points }}</td>
                 <td><button @click="handleOpenReplay(game)">Replay</button></td>
               </tr>
@@ -161,10 +161,8 @@ export default defineComponent({
     async fetchGames() {
       if (!this.user) return
       try {
-        const filterParams = `gameType:${
-          this.selectedGameType === 'online' ? 'random' : this.selectedGameType
-        }`
-        this.games = await UserService.getUserGames(this.user.id.toString(), filterParams)
+        const filterParams = `gameType:${this.selectedGameType}`
+        this.games = await UserService.getUserGames(this.user.userId.toString(), filterParams)
       } catch (error: any) {
         toast.error(error.message)
       }

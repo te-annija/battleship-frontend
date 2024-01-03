@@ -12,7 +12,7 @@
       'ship-sunk': ship.hits === ship.size,
       'ship-selected': isSelected
     }"
-    :id="ship.id"
+    :id="ship.shipId"
     :draggable="!isGameMode && isEditMode"
     @dragstart="emitSelectShip"
     @dragend="emitUnselectShip"
@@ -59,12 +59,12 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.$emit('toggleRotation', this.ship.id, this.isVertical)
+    this.$emit('toggleRotation', this.ship.shipId, this.isVertical)
   },
   watch: {
     ship: {
       handler(ship, oldShip) {
-        if (ship.id !== oldShip.id) {
+        if (ship.shipId !== oldShip.shipId) {
           this.isVertical = ship.position.isVertical
         }
       },
@@ -74,7 +74,7 @@ export default defineComponent({
   methods: {
     emitSelectShip(event: DragEvent) {
       if (event && event.dataTransfer) {
-        event.dataTransfer.setData('shipId', this.ship.id)
+        event.dataTransfer.setData('shipId', this.ship.shipId)
       }
 
       $bus.emit('select-ship', {
@@ -89,7 +89,7 @@ export default defineComponent({
     },
     handleToggleRotation() {
       this.isVertical = !this.isVertical
-      this.$emit('toggleRotation', this.ship.id, this.isVertical)
+      this.$emit('toggleRotation', this.ship.shipId, this.isVertical)
     }
   }
 })

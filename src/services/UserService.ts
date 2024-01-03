@@ -139,8 +139,8 @@ export class UserService {
    */
   async updateUser(userData: any): Promise<AxiosResponse<User>> {
     try {
-      const { id = -1, ...userDataUpdate } = { ...userData }
-      const response: AxiosResponse = await axios.put(`${API_URL}/${id}`, userDataUpdate, {
+      const { userId = -1, ...userDataUpdate } = { ...userData }
+      const response: AxiosResponse = await axios.put(`${API_URL}/${userId}`, userDataUpdate, {
         headers: authService.authHeader()
       })
       return response.data

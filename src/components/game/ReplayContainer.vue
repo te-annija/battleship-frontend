@@ -198,7 +198,9 @@ export default defineComponent({
         cellToUpdate.origin === 'player' ? this.gameboard : this.attackGameboard
       if (gameboard) {
         for (let i = 0; i < gameboard.grid.length; i++) {
-          const col: number = gameboard.grid[i].findIndex((cell) => cell.id === cellToUpdate.id)
+          const col: number = gameboard.grid[i].findIndex(
+            (cell) => cell.gameboardCellId === cellToUpdate.gameboardCellId
+          )
           if (col !== -1) {
             return { row: i, col, origin: cellToUpdate.origin, state: cellToUpdate.state }
           }

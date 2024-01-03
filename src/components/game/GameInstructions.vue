@@ -9,7 +9,10 @@
       <div v-if="status === gameStatusType.Prepare">
         <h2>Welcome to battleship game!</h2>
         <p>Objective: Sink all your opponent's ships before they sink yours!</p>
-        <p>Let's prepare - Place all your ships on the grid and then select an opponent.</p>
+        <p>
+          Let's prepare - Place all your ships on the grid (hold, drag and release) and then select
+          an opponent.
+        </p>
       </div>
       <div v-if="status === gameStatusType.Waiting">
         <h2>Waiting in the battlefield...</h2>

@@ -109,12 +109,12 @@ export default defineComponent({
       this.handleDragLeaveCell(rowIndex, colIndex)
     },
     handleDragOverCell(rowIndex: number, colIndex: number, ship?: Ship) {
-      if (!ship || (this.selectedShip && ship && this.selectedShip.id === ship.id)) {
+      if (!ship || (this.selectedShip && ship && this.selectedShip.shipId === ship.shipId)) {
         this.dragShip(rowIndex, colIndex, true)
       }
     },
     handleDragLeaveCell(rowIndex: number, colIndex: number, ship?: Ship) {
-      if (!ship || (this.selectedShip && ship && this.selectedShip.id === ship.id)) {
+      if (!ship || (this.selectedShip && ship && this.selectedShip.shipId === ship.shipId)) {
         this.dragShip(rowIndex, colIndex, false)
       }
     },

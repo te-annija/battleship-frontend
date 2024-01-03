@@ -16,7 +16,7 @@
         </thead>
         <tbody>
           <tr
-            :class="{ 'leaderboard-me': currentUser && currentUser.id === user.id }"
+            :class="{ 'leaderboard-me': currentUser && currentUser.userId === user.userId }"
             v-for="(user, index) of users"
             :key="user.username"
           >
@@ -24,7 +24,7 @@
             <td><rank-widget :rank="user.rank" /></td>
             <td>
               <router-link :to="`/user/${user.username}`">{{ user.username }}</router-link>
-              {{ currentUser && currentUser.id === user.id ? '(You)' : '' }}
+              {{ currentUser && currentUser.userId === user.userId ? '(You)' : '' }}
             </td>
             <td>{{ user.points }}</td>
           </tr>

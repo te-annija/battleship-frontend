@@ -84,8 +84,8 @@ export class WebSocketService {
       console.log('Received from server:', data)
     }
 
-    if (data.data && data.data.player && !cookieService.getUserId()) {
-      cookieService.setUserId(data.data.player.id)
+    if (data.data && data.data.player) {
+      cookieService.setUserId(data.data.player.playerId)
     }
 
     $bus.emit('websocket-message', data)

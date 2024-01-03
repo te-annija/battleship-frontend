@@ -8,8 +8,9 @@
     <table-templete
       :data="users"
       :table-headers="[
-        { label: 'User ID', field: 'id', filterValue: '', inputType: 'search' },
+        { label: 'User ID', field: 'userId', filterValue: '', inputType: 'search' },
         { label: 'Username', field: 'username', filterValue: '', inputType: 'search' },
+        { label: 'Email', field: 'email', filterValue: '', inputType: 'search' },
         { label: 'Points', field: 'points', filterValue: '', inputType: 'search' },
         { label: 'Rank ID', field: 'rankId', filterValue: '', inputType: 'search' },
         { label: 'Created At', field: 'createdAt', filterValue: '', inputType: 'date' },

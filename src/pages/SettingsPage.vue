@@ -21,6 +21,21 @@
           />
           <div class="form-section">
             <FormKit
+              type="email"
+              name="email"
+              id="email"
+              label="Email"
+              validation="required|length:3,64|email"
+              help="Your email address. We will contact you to this address if necessary."
+              :disabled="!isEditEmail"
+              :value="user.email"
+            />
+            <div class="form-change" @click="isEditEmail = !isEditEmail">
+              <p>{{ !isEditEmail ? 'Change' : 'Cancel' }}</p>
+            </div>
+          </div>
+          <div class="form-section">
+            <FormKit
               type="password"
               name="password"
               label="Password"
@@ -76,26 +91,40 @@ export default defineComponent({
   data() {
     return {
       isEditPassword: false as Boolean,
+      isEditEmail: false as Boolean,
       showConfirmation: false as Boolean
     }
   },
   computed: {
     ...mapState(useUserStore, ['user']),
     disableSubmit(): boolean {
-      return !this.isEditPassword
+      return !this.isEditPassword && !this.isEditEmail
     }
   },
   methods: {
     ...mapActions(useUserStore, ['update', 'delete']),
     async onSubmit(values: any) {
-      values.id = this.user ? this.user.id : -1
-      await this.update(values)
+      const updateValues: any = {}
+      updateValues.userId = this.user ? this.user.userId : -1
+
+      if (this.isEditPassword) {
+        updateValues.password = values.password
+        updateValues.confirm = values.confirm
+      }
+
+      if (this.isEditEmail) {
+        updateValues.email = values.email
+      }
+
+      await this.update(updateValues)
       this.isEditPassword = false
+      this.isEditEmail = false
     },
     async confirmDeactivation() {
-      const userId: number = this.user ? this.user.id : -1
+      const userId: number = this.user ? this.user.userId : -1
       await this.delete(userId)
       this.showConfirmation = false
+      this.isEditEmail = false
     }
   }
 })

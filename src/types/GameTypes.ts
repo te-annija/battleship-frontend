@@ -7,7 +7,7 @@
 /** Represents a player in the game. */
 export type Player = {
   /** The unique identifier for the player. */
-  id: string
+  playerId: string
 
   /** The public name of the player. */
   username: string
@@ -36,7 +36,7 @@ export type Gameboard = {
 
 /** Represents an individual cell on the gameboard.*/
 export type GameboardCell = {
-  id: number
+  gameboardCellId: number
 
   /** The state of the cell (e.g., empty, hit, missed). */
   state: string
@@ -60,7 +60,7 @@ export type GameboardCell = {
 /** Represents battleship status. */
 export type Ship = {
   /** The unique identifier for the ship. */
-  id: string
+  shipId: string
 
   /** The name of the ship. */
   name: string

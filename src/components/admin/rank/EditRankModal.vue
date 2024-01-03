@@ -11,7 +11,7 @@
     @submitForm="updateRank"
     @cancel="handleCancel"
   >
-    <FormKit type="hidden" number name="id" :value="rank.id" />
+    <FormKit type="hidden" number name="rankId" :value="rank.rankId" />
     <div v-if="!rank.deletedAt">
       <FormKit
         type="text"
@@ -107,7 +107,7 @@ export default defineComponent({
     async updateRank(values: any) {
       try {
         if (values.restore) {
-          const data: any = await rankService.restoreRank(values.id)
+          const data: any = await rankService.restoreRank(values.rankId)
           toast.success(data.message)
         } else {
           const formData = new FormData()
@@ -118,7 +118,7 @@ export default defineComponent({
           formData.append('title', values.title)
           formData.append('minimumPoints', values.minimumPoints)
           formData.append('difficulty', values.difficulty)
-          const data: any = await rankService.updateRank(values.id, formData)
+          const data: any = await rankService.updateRank(values.rankId, formData)
           toast.success(data.message)
         }
 
@@ -155,5 +155,11 @@ export default defineComponent({
   right: 0;
   width: min-content;
   margin-left: auto;
+}
+
+:deep(ul) {
+  background: red !important;
+  max-width: 300px;
+  overflow-x: hidden;
 }
 </style>

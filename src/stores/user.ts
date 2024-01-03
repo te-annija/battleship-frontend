@@ -22,7 +22,7 @@ export const useUserStore = defineStore('user', {
     async fetchUserData() {
       try {
         if (this.user) {
-          const data: any = await userService.getUserById(this.user.id.toString())
+          const data: any = await userService.getUserById(this.user.userId.toString())
           this.user = data.user
         }
       } catch (error: any) {
@@ -59,13 +59,11 @@ export const useUserStore = defineStore('user', {
     },
     /**
      * Handle request to register a new user and respond with results.
-     * @param username The unique username of the user.
-     * @param password The password of the user.
-     * @param confirm The password confirmation. Should match the password for valid registration.
+     * @param userData The data to register a new user.
      */
-    async register(username: string, password: string, confirm: string) {
+    async register(userData: any) {
       try {
-        const data: any = await AuthService.register(username, password, confirm)
+        const data: any = await AuthService.register(userData)
         this.$router.push({ path: '/login' })
         toast.success(data.message)
       } catch (error: any) {

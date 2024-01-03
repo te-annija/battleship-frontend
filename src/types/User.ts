@@ -9,7 +9,7 @@ import type { Rank } from './Rank'
 /** Reprensents the registered user general information. */
 export type User = {
   /** Unique identifier of the user. */
-  id: number
+  userId: number
 
   /** Unique username. User is identified using this string. */
   username: string
@@ -18,7 +18,7 @@ export type User = {
   blockExpiresAt: string
 
   /** True if user is a administrator, false otherwise. Do not use for auth. */
-  isAdmin: boolean
+  role: boolean
 
   /** Total point count of the user. */
   points: number

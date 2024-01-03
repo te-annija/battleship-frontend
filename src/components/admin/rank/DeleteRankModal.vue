@@ -46,7 +46,7 @@ export default defineComponent({
   methods: {
     async deleteRank() {
       try {
-        await rankService.deleteRank(this.rank.id.toString())
+        await rankService.deleteRank(this.rank.rankId.toString())
         toast.success('Rank deleted successfully')
         this.$emit('afterDelete')
       } catch (error: any) {

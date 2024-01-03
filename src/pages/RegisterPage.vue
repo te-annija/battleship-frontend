@@ -17,6 +17,14 @@
           help="Your unique username. Will be displayed publicly."
         />
         <FormKit
+          type="email"
+          name="email"
+          id="email"
+          label="Email"
+          validation="required|length:3,64|email"
+          help="Your email address. We will contact you to this address if necessary."
+        />
+        <FormKit
           type="password"
           name="password"
           label="Password"
@@ -53,7 +61,8 @@ export default defineComponent({
   methods: {
     ...mapActions(useUserStore, ['register']),
     async onSumbit(values: any) {
-      await this.register(values.username, values.password, values.password_confirm)
+      values.confirm = values.password_confirm
+      await this.register(values)
     }
   }
 })

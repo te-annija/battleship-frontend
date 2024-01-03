@@ -46,7 +46,7 @@ export default defineComponent({
   methods: {
     async deleteUser() {
       try {
-        await userService.deleteUser(this.user.id.toString())
+        await userService.deleteUser(this.user.userId.toString())
         toast.success('User deleted successfully')
         this.$emit('afterDelete')
       } catch (error: any) {

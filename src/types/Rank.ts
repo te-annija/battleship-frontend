@@ -6,7 +6,7 @@
 /** Reprensents the rank information. */
 export type Rank = {
   /** Unique identifier of the rank. */
-  id: number
+  rankId: number
 
   /** The title of the rank. */
   title: string
