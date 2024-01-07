@@ -90,6 +90,10 @@
       margin-left: -1.5em;
       pointer-events: none;
     }
+
+    option {
+      background-color: $cl-bg;
+    }
   }
 
   [data-type='file'] {

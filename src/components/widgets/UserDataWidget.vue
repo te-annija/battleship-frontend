@@ -8,7 +8,9 @@
     <RankWidgetVue class="user__rank" v-if="rank" :rank="rank" />
     <div>
       <div class="opacity">{{ text }}</div>
-      <router-link v-if="isUser" target="_blank" :to="`/user/${username}`"> {{ username }}</router-link>
+      <router-link v-if="isUser" target="_blank" :to="`/user/${username}`">
+        {{ username }}</router-link
+      >
       <div v-else>{{ username }}</div>
       <div><slot></slot></div>
     </div>

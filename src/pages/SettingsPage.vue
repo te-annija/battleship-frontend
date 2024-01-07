@@ -25,7 +25,7 @@
               name="email"
               id="email"
               label="Email"
-              validation="required|length:3,64|email"
+              validation="required|length:1,64|email"
               help="Your email address. We will contact you to this address if necessary."
               :disabled="!isEditEmail"
               :value="user.email"
@@ -134,7 +134,7 @@ export default defineComponent({
 @import '../assets/styles/_variables';
 
 .settings {
-  max-width: 450px;
+  max-width: 505px;
   margin: 0 auto;
 
   &-section {

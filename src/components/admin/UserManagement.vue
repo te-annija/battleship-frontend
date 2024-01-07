@@ -21,6 +21,7 @@
       @showCreate="handleCreate"
       @showEdit="handleEdit"
       @showDelete="handleDelete"
+      @restore="handleRestore"
       @sort="handleSort"
       @filter="handleFilter"
     />
@@ -105,6 +106,11 @@ export default defineComponent({
     handleDelete(user: User) {
       this.showDelete = true
       this.user = user
+    },
+    async handleRestore(user: User) {
+      const data: any = await UserService.restore(user.userId.toString())
+      toast.success(data.message)
+      this.fetchUsers()
     },
     handleSort(sortField: string, sortOrder: string) {
       this.sortField = sortField

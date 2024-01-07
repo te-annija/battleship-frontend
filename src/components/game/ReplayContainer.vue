@@ -8,18 +8,20 @@
     <button class="replay__close btn-red" @click="$emit('closeReplay')">Return</button>
     <div class="replay__information">
       <user-data-widget
-        v-for="player of game.players"
-        :key="player.username"
+        v-for="player of game.userData"
+        :key="player.user.username"
         :rank="player.rank"
-        :username="player.username"
-        :text="player.GameUser.userId === game.GameUser.userId ? 'You' : 'Opponent'"
+        :username="player.user.username"
+        :is-user="true && !player.user.deletedAt"
+        :text="player.userId === game.GameUser.userId ? 'You' : 'Opponent'"
       >
-        <span v-if="player.GameUser.points"> Points: {{ player.GameUser.points }}</span>
-        <span v-if="game.winner && game.winner.username === player.username"> (Winner) </span>
+        <span v-if="player.points"> Points: {{ player.points }}</span>
+        <span v-if="game.winnerId && game.winnerId === player.userId"> (Winner) </span>
       </user-data-widget>
       <user-data-widget
-        v-if="game.players.length < 2"
+        v-if="game.userData.length < 2"
         :username="game.gameType === 'computer' ? 'Friendly AI' : 'Guest'"
+        :is-user="false"
         text="Opponent"
       >
         <span v-if="!game.winner || !game.winner.username"> (Winner) </span>
@@ -45,31 +47,31 @@
       </div>
     </div>
     <div class="replay__gameboards">
-      <GameBoardVue
+      <game-board
         v-if="gameboard"
         :gameboard="gameboard"
         :is-player-game-board="true"
         :is-replay-mode="true"
-      ></GameBoardVue>
-      <GameBoardVue
+      />
+      <game-board
         v-if="attackGameboard"
         :gameboard="attackGameboard"
         :is-player-game-board="false"
         :is-replay-mode="true"
-      ></GameBoardVue>
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import GameBoardVue from '../game/GameBoard.vue'
+import GameBoard from '../game/GameBoard.vue'
 import UserDataWidget from '../widgets/UserDataWidget.vue'
 import type { GameboardCell, Gameboard as GameBoardType } from '@/types/GameTypes'
 import type { PropType } from 'vue'
 
 export default defineComponent({
-  components: { GameBoardVue, UserDataWidget },
+  components: { GameBoard, UserDataWidget },
   props: {
     game: {
       type: Object as PropType<any>,
@@ -271,7 +273,7 @@ export default defineComponent({
     :deep(.ship) {
       border: dashed 1.5px $cl-text;
       box-shadow: none;
-      z-index: 999;
+      z-index: 10;
     }
   }
 

@@ -5,10 +5,7 @@
 -->
 <template>
   <div class="history container">
-    <div v-if="loading" class="box-shadow card history__loading">
-      <span class="spinner" /> Loading...
-    </div>
-    <div v-else class="history__card box-shadow card">
+    <div class="history__card box-shadow card">
       <h2 class="text-center">Game History</h2>
       <div class="history__games" v-if="!isReplayOpen">
         <div class="history__actions">
@@ -42,7 +39,12 @@
                 <td>{{ formatDate(game.createdAt) }}</td>
                 <td>
                   <router-link
-                    v-if="game.players.length > 1"
+                    v-if="
+                      game.userData[0] &&
+                      !game.userData[0].user.deletedAt &&
+                      game.userData[1] &&
+                      !game.userData[1].user.deletedAt
+                    "
                     :to="`user/${getOpponentUsername(game)}`"
                   >
                     {{ getOpponentUsername(game) }}</router-link
@@ -54,7 +56,8 @@
                 <td><button @click="handleOpenReplay(game)">Replay</button></td>
               </tr>
               <tr v-if="games && games.length <= 0">
-                <td colspan="6">No games found.</td>
+                <td v-if="loading" colspan="6"><span class="spinner" /> Loading... </td>
+                <td v-else colspan="6">No games found.</td>
               </tr>
             </tbody>
           </table>
@@ -125,15 +128,13 @@ export default defineComponent({
         return 'Friendly AI'
       }
 
-      const opponent = game.players.find(
-        (player: any) => player.GameUser.userId !== game.GameUser.userId
-      )
+      const opponent = game.userData.find((user: any) => user.userId !== game.GameUser.userId)
 
       if (!opponent) {
         return 'Guest'
       }
 
-      return opponent.username
+      return opponent.user.username
     },
     handleOpenReplay(game: any) {
       this.selectedGame = game
@@ -160,12 +161,14 @@ export default defineComponent({
     },
     async fetchGames() {
       if (!this.user) return
+      this.loading = true
       try {
         const filterParams = `gameType:${this.selectedGameType}`
         this.games = await UserService.getUserGames(this.user.userId.toString(), filterParams)
       } catch (error: any) {
         toast.error(error.message)
       }
+      this.loading = false
     }
   }
 })

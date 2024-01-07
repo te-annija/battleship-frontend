@@ -44,6 +44,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .login {
-  max-width: 500px;
+  max-width: 505px;
 }
 </style>

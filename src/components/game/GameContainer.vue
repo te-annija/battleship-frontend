@@ -134,7 +134,7 @@
           <h2 v-if="status === gameStatusType.GameEnded && game">
             {{ game.isWinner ? 'Victory!' : 'Defeat!' }}
           </h2>
-          <p v-if="user && game">{{ game.points }} points</p>
+          <p v-if="user && game && game.points">{{ game.points }} points</p>
           <p v-if="!user && game && game.isWinner && game.points > 0">
             You would earn {{ game.points }} points if logged in
           </p>

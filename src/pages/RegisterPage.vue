@@ -13,7 +13,7 @@
           name="username"
           id="username"
           label="Username"
-          validation="required|length:3,16"
+          validation="required|length:1,32"
           help="Your unique username. Will be displayed publicly."
         />
         <FormKit
@@ -21,7 +21,7 @@
           name="email"
           id="email"
           label="Email"
-          validation="required|length:3,64|email"
+          validation="required|length:1,64|email"
           help="Your email address. We will contact you to this address if necessary."
         />
         <FormKit
@@ -70,6 +70,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .register {
-  max-width: 500px;
+  max-width: 505px;
 }
 </style>

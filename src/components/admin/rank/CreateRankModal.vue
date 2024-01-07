@@ -16,7 +16,7 @@
       name="title"
       id="title"
       label="Title"
-      validation="required"
+      validation="required|length:1,32"
       help="Title for the rank."
     />
     <FormKit
@@ -25,6 +25,7 @@
       id="icon"
       label="Rank icon"
       validation="required"
+      accept=".png, .svg"
       help="The icon to be asociated with the rank."
       @change="handleFileUpload"
     />

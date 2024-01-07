@@ -12,58 +12,48 @@
     @cancel="handleCancel"
   >
     <FormKit type="hidden" number name="rankId" :value="rank.rankId" />
-    <div v-if="!rank.deletedAt">
-      <FormKit
-        type="text"
-        name="title"
-        id="title"
-        label="Title"
-        :value="rank.title"
-        validation="required"
-        help="Title for the rank."
-      />
-      <FormKit
-        type="select"
-        name="difficulty"
-        id="difficulty"
-        label="Difficulty Level"
-        validation="required"
-        :value="rank.difficulty.toString()"
-        :options="['1', '2', '3', '4', '5', '6', '7']"
-        help="Difficulty level for the rank (1 to 7)"
-      />
-      <FormKit
-        type="number"
-        name="minimumPoints"
-        id="minimumPoints"
-        label="Minimum Points"
-        :value="rank.minimumPoints.toString()"
-        validation="required|isInt|min:0"
-        help="Minimum points required for the rank (>= 0)"
-      />
-      <div class="form-group">
-        <div class="form-change" @click="isEditImage = !isEditImage">
-          <p>{{ !isEditImage ? 'Change' : 'Cancel' }}</p>
-        </div>
-        <FormKit
-          type="file"
-          name="icon"
-          id="icon"
-          label="Rank icon"
-          accept=".png, .svg"
-          :value="[{ name: rank.icon }]"
-          :disabled="!isEditImage"
-          help="The icon to be asociated with the rank."
-          @change="handleFileUpload"
-        />
+    <FormKit
+      type="text"
+      name="title"
+      id="title"
+      label="Title"
+      :value="rank.title"
+      validation="required|length:1,32"
+      help="Title for the rank."
+    />
+    <FormKit
+      type="select"
+      name="difficulty"
+      id="difficulty"
+      label="Difficulty Level"
+      validation="required"
+      :value="rank.difficulty.toString()"
+      :options="['1', '2', '3', '4', '5', '6', '7']"
+      help="Difficulty level for the rank (1 to 7)"
+    />
+    <FormKit
+      type="number"
+      name="minimumPoints"
+      id="minimumPoints"
+      label="Minimum Points"
+      :value="rank.minimumPoints.toString()"
+      validation="required|isInt|min:0"
+      help="Minimum points required for the rank (>= 0)"
+    />
+    <div class="form-group">
+      <div class="form-change" @click="isEditImage = !isEditImage">
+        <p>{{ !isEditImage ? 'Change' : 'Cancel' }}</p>
       </div>
-    </div>
-    <div v-else>
       <FormKit
-        type="checkbox"
-        name="restore"
-        label="Re-activate rank"
-        help="Activates deleted rank if checked."
+        type="file"
+        name="icon"
+        id="icon"
+        label="Rank icon"
+        accept=".png, .svg"
+        :value="[{ name: rank.icon }]"
+        :disabled="!isEditImage"
+        help="The icon to be asociated with the rank."
+        @change="handleFileUpload"
       />
     </div>
   </modal-template>
@@ -106,21 +96,16 @@ export default defineComponent({
   methods: {
     async updateRank(values: any) {
       try {
-        if (values.restore) {
-          const data: any = await rankService.restoreRank(values.rankId)
-          toast.success(data.message)
-        } else {
-          const formData = new FormData()
-          if (this.image && this.isEditImage) {
-            formData.append('icon', this.image)
-          }
-
-          formData.append('title', values.title)
-          formData.append('minimumPoints', values.minimumPoints)
-          formData.append('difficulty', values.difficulty)
-          const data: any = await rankService.updateRank(values.rankId, formData)
-          toast.success(data.message)
+        const formData = new FormData()
+        if (this.image && this.isEditImage) {
+          formData.append('icon', this.image)
         }
+
+        formData.append('title', values.title)
+        formData.append('minimumPoints', values.minimumPoints)
+        formData.append('difficulty', values.difficulty)
+        const data: any = await rankService.updateRank(values.rankId, formData)
+        toast.success(data.message)
 
         this.$emit('afterUpdate')
       } catch (error: any) {
@@ -158,7 +143,6 @@ export default defineComponent({
 }
 
 :deep(ul) {
-  background: red !important;
   max-width: 300px;
   overflow-x: hidden;
 }

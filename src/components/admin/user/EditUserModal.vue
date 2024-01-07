@@ -12,48 +12,38 @@
     @cancel="$emit('cancel')"
   >
     <FormKit type="hidden" number name="userId" :value="user.userId" />
-    <div v-if="!user.deletedAt">
-      <FormKit
-        type="text"
-        name="username"
-        id="username"
-        label="Username"
-        validation="required|length:3,32"
-        help="Make sure to nofity user about the new username."
-        :value="user.username"
-      />
-      <FormKit
-        type="email"
-        name="email"
-        id="email"
-        label="Email"
-        validation="required|length:3,64|email"
-        help="User email address."
-        :value="user.email"
-      />
-      <FormKit
-        type="date"
-        name="blockExpiresAt"
-        label="Block User"
-        help="Enter date when should the block expire. Leave empty to unblock."
-        :value="getDate(user.blockExpiresAt)"
-      />
-      <FormKit
-        type="checkbox"
-        name="role"
-        label="Is Admin"
-        help="Gives user admin previleges if checked."
-        :value="user.role"
-      />
-    </div>
-    <div v-else>
-      <FormKit
-        type="checkbox"
-        name="restore"
-        label="Re-activate user"
-        help="Activates deleted user if checked."
-      />
-    </div>
+    <FormKit
+      type="text"
+      name="username"
+      id="username"
+      label="Username"
+      validation="required|length:1,32"
+      help="Make sure to nofity user about the new username."
+      :value="user.username"
+    />
+    <FormKit
+      type="email"
+      name="email"
+      id="email"
+      label="Email"
+      validation="required|length:1,64|email"
+      help="User email address."
+      :value="user.email"
+    />
+    <FormKit
+      type="date"
+      name="blockExpiresAt"
+      label="Block User"
+      help="Enter date when should the block expire. Leave empty to unblock."
+      :value="getDate(user.blockExpiresAt)"
+    />
+    <FormKit
+      type="checkbox"
+      name="role"
+      label="Is Admin"
+      help="Gives user admin previleges if checked."
+      :value="user.role"
+    />
   </modal-template>
 </template>
 
@@ -88,13 +78,8 @@ export default defineComponent({
   methods: {
     async updateUser(values: any) {
       try {
-        if (values.restore) {
-          const data: any = await userService.restore(values.userId)
-          toast.success(data.message)
-        } else {
-          const data: any = await userService.updateUser(values)
-          toast.success(data.message)
-        }
+        const data: any = await userService.updateUser(values)
+        toast.success(data.message)
         this.$emit('afterUpdate')
       } catch (error: any) {
         toast.error(error.message)

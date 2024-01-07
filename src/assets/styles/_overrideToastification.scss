@@ -37,8 +37,10 @@ $vt-color-error: var(--cl-bg-error);
 
 .#{$vt-namespace}__close-button {
   align-self: flex-start;
+
   &:hover {
     border: none !important;
     color: #fff !important;
+    background: none !important;
   }
 }

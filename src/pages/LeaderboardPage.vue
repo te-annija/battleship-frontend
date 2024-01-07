@@ -24,7 +24,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .leaderboard {
-  max-width: 500px;
+  max-width: 505px;
   height: 65vh;
 
   h1 {

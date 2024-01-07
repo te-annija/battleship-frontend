@@ -33,8 +33,11 @@
               <span v-else>{{ formatCellValue(entity[header.field]) }}</span>
             </td>
             <td class="management__table-actions">
-              <button @click="$emit('showEdit', entity)">Edit</button>
-              <button class="btn-red" @click="$emit('showDelete', entity)">Delete</button>
+              <button v-if="!entity.deletedAt" @click="$emit('showEdit', entity)">Edit</button>
+              <button v-if="!entity.deletedAt" class="btn-red" @click="$emit('showDelete', entity)">
+                Delete
+              </button>
+              <button v-if="entity.deletedAt" @click="$emit('restore', entity)">Restore</button>
             </td>
           </tr>
         </tbody>

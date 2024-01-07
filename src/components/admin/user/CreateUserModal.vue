@@ -16,7 +16,7 @@
       name="username"
       id="username"
       label="Username"
-      validation="required|length:3,32"
+      validation="required|length:1,32"
       help="Unique username. Will be displayed publicly."
     />
     <FormKit
@@ -24,7 +24,7 @@
       name="email"
       id="email"
       label="Email"
-      validation="required|length:3,64|email"
+      validation="required|length:1,64|email"
       help="User email address."
     />
     <FormKit

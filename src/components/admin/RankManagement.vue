@@ -20,6 +20,7 @@
       @showCreate="handleCreate"
       @showEdit="handleEdit"
       @showDelete="handleDelete"
+      @restore="handleRestore"
       @sort="handleSort"
       @filter="handleFilter"
     />
@@ -57,6 +58,7 @@ import { useToast } from 'vue-toastification'
 import { type Rank } from '@/types/Rank'
 
 import authService from '@/services/AuthService'
+import RankService from '@/services/RankService'
 
 const toast = useToast()
 
@@ -82,10 +84,10 @@ export default defineComponent({
     TableTemplete
   },
   async mounted() {
-    await this.fetchUsers()
+    await this.fetchRanks()
   },
   methods: {
-    async fetchUsers() {
+    async fetchRanks() {
       try {
         this.ranks = await rankService.getRanks(
           this.filterParams,
@@ -108,18 +110,23 @@ export default defineComponent({
       this.rank = rank
       this.showDelete = true
     },
+    async handleRestore(rank: Rank) {
+      const data: any = await RankService.restoreRank(rank.rankId.toString())
+      toast.success(data.message)
+      this.fetchRanks()
+    },
     handleSort(sortField: string, sortOrder: string) {
       this.sortField = sortField
       this.sortOrder = sortOrder
-      this.fetchUsers()
+      this.fetchRanks()
     },
     handleFilter(filterParams: string) {
       this.filterParams = filterParams
-      this.fetchUsers()
+      this.fetchRanks()
     },
     handleAfterAction() {
       this.handleCancel()
-      this.fetchUsers()
+      this.fetchRanks()
     },
     handleCancel() {
       this.rank = undefined

@@ -54,14 +54,7 @@ import UserService from '@/services/UserService'
 import type { User } from '@/types/User'
 import { defineComponent } from 'vue'
 import { Line as ChartLine } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  type ChartData
-} from 'chart.js'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import { mapState } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import RankWidget from '@/components/widgets/RankWidget.vue'
@@ -79,7 +72,7 @@ export default defineComponent({
     return {
       user: null as User | null,
       loading: true as boolean,
-      chartData: {} as ChartData,
+      chartData: {} as any,
       legend: [] as any[],
       userStats: {} as Record<string, any>
     }
@@ -175,7 +168,8 @@ export default defineComponent({
 @import '../assets/styles/_variables';
 
 .profile {
-  max-width: 450px;
+  max-width: 505px;
+  padding: 10px;
   margin: 0 auto;
 
   &__section {
