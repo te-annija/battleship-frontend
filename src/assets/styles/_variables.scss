@@ -1,0 +1,76 @@
+// Color definitions.
+$cl-purple: #be0afa;
+$cl-blue: #628395;
+$cl-deep-black: #080417;
+$cl-rose: #fef9ff;
+$cl-light-blue: #ced8de;
+$cl-brown: #d1bfbf;
+$cl-red: #f85149;
+$cl-deep-blue: #0066ff;
+
+// Gameboard sizes.
+$cell-size: 30px;
+$cell-size-mobile: 25px;
+
+// Variable definitions for light theme.
+html[data-theme='light'] {
+  --cl-text: #080417;
+  --cl-bg: #fff;
+  --cl-bg-navbar: #cdd8de;
+  --cl-bg-navbar-account: #8da5b2;
+  --cl-bg-card: #ebeff2;
+  --cl-brdr-game: #d1bfbf;
+  --cl-bg-error: #f85149;
+  --cl-btn-text-hover: #be0afa;
+  --cl-btn-bg-hover: none;
+  --cl-bg-overlay: #00000060;
+  --cl-bg-homepage: #cdd8dec5;
+
+  --cl-bg-admin: #cdd8de;
+  --cl-bg-admin-overlay: rgba(0, 0, 0, 0.5);
+
+  --bg-rotate: url(../icons/rotate.svg);
+}
+
+// Variable definitions for dark theme.
+html[data-theme='dark'] {
+  --cl-text: #fff;
+  --cl-bg: #080417;
+  --cl-bg-navbar: #080417;
+  --cl-bg-navbar-account: #3e5162;
+  --cl-bg-card: #2f3c4e;
+  --cl-brdr-game: #080417;
+  --cl-bg-error: #f85149;
+
+  --cl-btn-text-hover: #fff;
+  --cl-btn-bg-hover: #be0afa;
+  --cl-bg-overlay: #000000b0;
+  --cl-bg-homepage: #2f3c4ec5;
+
+  --cl-bg-admin: #2f3c4e;
+  --cl-bg-admin-overlay: rgba(61, 60, 60, 0.5);
+
+  --bg-rotate: url(../icons/rotate-white.svg);
+}
+
+// Variable  definitions for styling.
+$cl-primary: $cl-purple;
+$cl-secondary: $cl-blue;
+
+$cl-text: var(--cl-text);
+$cl-bg: var(--cl-bg);
+$cl-bg-navbar: var(--cl-bg-navbar);
+$cl-bg-navbar-account: var(--cl-bg-navbar-account);
+$cl-bg-card: var(--cl-bg-card);
+$cl-brdr-game: var(--cl-brdr-game);
+
+$cl-btn-text-hover: var(--cl-btn-text-hover);
+$cl-btn-bg-hover: var(--cl-btn-bg-hover);
+
+$cl-bg-overlay: var(--cl-bg-overlay);
+$cl-bg-homepage: var(--cl-bg-homepage);
+
+$cl-bg-admin: var(--cl-bg-admin);
+$cl-bg-admin-overlay: var(--cl-bg-admin-overlay);
+
+$bg-rotate: var(--bg-rotate);

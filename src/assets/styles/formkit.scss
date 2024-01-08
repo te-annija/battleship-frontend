@@ -1,0 +1,166 @@
+@import './_variables.scss';
+.formkit-form {
+  h2 {
+    font-size: 24px;
+  }
+
+  .formkit-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .formkit-outer {
+    margin-bottom: 10px;
+
+    .formkit-icon svg {
+      width: 100%;
+      margin: auto;
+      max-height: 1em;
+      max-width: 1em;
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+
+      .formkit-input {
+        cursor: default;
+      }
+
+      .formkit-file-remove {
+        z-index: 0 !important;
+      }
+    }
+  }
+
+  .formkit-label {
+    font-size: 16px;
+  }
+
+  .formkit-input {
+    padding: 5px;
+    background: transparent;
+    font-size: 16px;
+    border: solid 2px $cl-primary;
+    border-radius: 5px;
+    width: 100%;
+    color: $cl-text;
+
+    &[type='checkbox'] {
+      width: 20px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+
+  .formkit-help {
+    opacity: 0.7;
+    font-size: 0.9em;
+  }
+
+  .formkit-messages {
+    list-style: none;
+    color: $cl-red;
+  }
+
+  .formkit-message {
+    padding: 5px 0;
+  }
+
+  button {
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  [data-invalid] {
+    .formkit-input {
+      border-color: $cl-red;
+    }
+  }
+
+  [data-type='select'] {
+    .formkit-input {
+      appearance: none;
+    }
+
+    .formkit-select-icon {
+      margin-left: -1.5em;
+      pointer-events: none;
+    }
+
+    option {
+      background-color: $cl-bg;
+    }
+  }
+
+  [data-type='file'] {
+    & .formkit-no-files,
+    & .formkit-file-item {
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
+      position: relative;
+      padding: 5px;
+    }
+
+    .formkit-file-item-icon,
+    .formkit-no-files-icon {
+      width: 1em;
+      margin-right: 0.5em;
+    }
+
+    .formkit-file-remove {
+      width: 20px;
+      border: none;
+      font-size: 0;
+      margin-left: auto;
+      padding: 0;
+      position: relative;
+      z-index: 3;
+      cursor: pointer;
+
+      &:hover {
+        color: $cl-red;
+      }
+
+      .formkit-file-remove-icon {
+        width: 1em;
+        font-size: 1rem;
+      }
+    }
+
+    .formkit-no-files {
+      opacity: 0.7;
+    }
+
+    .formkit-file-list {
+      width: 100%;
+    }
+
+    .formkit-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      cursor: pointer;
+      z-index: 2;
+      color: transparent;
+
+      &::file-selector-button {
+        font-size: 0;
+        padding: 0;
+        border: 0;
+      }
+    }
+  }
+}
+
+html[data-theme='dark'] {
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
