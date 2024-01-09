@@ -77,75 +77,13 @@ export default defineComponent({
       userStats: {} as Record<string, any>
     }
   },
+  watch: {
+    $route() {
+      this.getProfileData()
+    }
+  },
   async mounted() {
-    this.loading = true
-    const username: string = this.$route.params.username as string
-    if (!username) {
-      return
-    }
-
-    try {
-      const response: any = await UserService.getUserByUsername(username)
-      this.user = response.user
-    } catch (error: any) {
-      toast.error(`User ${username} does not exist`)
-    }
-
-    if (!this.user) {
-      this.$router.push({ path: '/not-found' })
-      return
-    }
-
-    const statistics: any = await UserService.getUserStatistics(this.user.userId.toString())
-    const currentUserStatistics: any =
-      this.currentUser && this.currentUser.username !== username
-        ? await UserService.getUserStatistics(this.currentUser.userId.toString())
-        : null
-
-    this.userStats = {
-      'Total points': this.user.points,
-      'Total games played': statistics.totalGamesPlayed,
-      'Total games won': statistics.totalGamesWon,
-      'Online games played': statistics.onlineGamesPlayed,
-      'Online games won': statistics.onlineGamesWon,
-      'Leaderboard position': statistics.leaderboardPosition
-    }
-
-    this.legend.push({
-      color: '#be0afa',
-      label: this.currentUser && this.currentUser.username === username ? 'You' : username,
-      points: statistics.weekPoints ?? 0
-    })
-
-    if (currentUserStatistics) {
-      this.legend.push({
-        color: '#cdd8de',
-        label: 'You',
-        points: currentUserStatistics.weekPoints ?? 0
-      })
-    }
-
-    this.chartData = {
-      labels: statistics.pointsByDay.map((data: any) => data.date),
-      datasets: [
-        {
-          tension: 0.3,
-          borderColor: '#be0afa',
-          data: statistics.pointsByDay.map((data: any) => data.points)
-        },
-        ...(currentUserStatistics
-          ? [
-              {
-                tension: 0.3,
-                borderColor: '#cdd8de',
-                data: currentUserStatistics.pointsByDay.map((data: any) => data.points)
-              }
-            ]
-          : [])
-      ]
-    }
-
-    this.loading = false
+    this.getProfileData()
   },
   computed: {
     ...mapState(useUserStore, { currentUser: 'user' })
@@ -159,6 +97,77 @@ export default defineComponent({
       }
 
       return value
+    },
+    async getProfileData() { 
+      this.loading = true
+      const username: string = this.$route.params.username as string
+      if (!username) {
+        return
+      }
+
+      try {
+        const response: any = await UserService.getUserByUsername(username)
+        this.user = response.user
+      } catch (error: any) {
+        toast.error(`User ${username} does not exist`)
+      }
+
+      if (!this.user) {
+        this.$router.push({ path: '/not-found' })
+        return
+      }
+
+      const statistics: any = await UserService.getUserStatistics(this.user.userId.toString())
+      const currentUserStatistics: any =
+        this.currentUser && this.currentUser.username !== username
+          ? await UserService.getUserStatistics(this.currentUser.userId.toString())
+          : null
+
+      this.userStats = {
+        'Total points': this.user.points,
+        'Total games played': statistics.totalGamesPlayed,
+        'Total games won': statistics.totalGamesWon,
+        'Online games played': statistics.onlineGamesPlayed,
+        'Online games won': statistics.onlineGamesWon,
+        'Leaderboard position': statistics.leaderboardPosition
+      }
+
+      this.legend = []
+      this.legend.push({
+        color: '#be0afa',
+        label: this.currentUser && this.currentUser.username === username ? 'You' : username,
+        points: statistics.weekPoints ?? 0
+      })
+
+      if (currentUserStatistics) {
+        this.legend.push({
+          color: '#cdd8de',
+          label: 'You',
+          points: currentUserStatistics.weekPoints ?? 0
+        })
+      }
+
+      this.chartData = {
+        labels: statistics.pointsByDay.map((data: any) => data.date),
+        datasets: [
+          {
+            tension: 0.3,
+            borderColor: '#be0afa',
+            data: statistics.pointsByDay.map((data: any) => data.points)
+          },
+          ...(currentUserStatistics
+            ? [
+                {
+                  tension: 0.3,
+                  borderColor: '#cdd8de',
+                  data: currentUserStatistics.pointsByDay.map((data: any) => data.points)
+                }
+              ]
+            : [])
+        ]
+      }
+
+      this.loading = false
     }
   }
 })
