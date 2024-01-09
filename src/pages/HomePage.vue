@@ -14,7 +14,7 @@
       <p class="homepage__accent"><router-link to="/game">Play Now</router-link></p>
 
       <p>Best admirals</p>
-      <leaderboard-widget :limit="10" />
+      <leaderboard-widget :limit="5" />
     </div>
   </div>
 </template>
